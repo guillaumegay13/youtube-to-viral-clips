@@ -8,7 +8,7 @@ import shutil
 import platform
 import os
 
-from config import SUBTITLE_STYLE, VERTICAL_SUBTITLE_STYLE, OUTPUTS_DIR
+from config import SUBTITLE_STYLE, VERTICAL_SUBTITLE_STYLE, OUTPUTS_DIR, SUBTITLE_TEMPLATES
 from modules.transcriber import VideoTranscriber
 
 
@@ -52,7 +52,7 @@ class SubtitleGenerator:
     def add_subtitles(self, video_path: str, transcript: Dict, 
                      start_time: float, end_time: float,
                      output_name: Optional[str] = None, vertical_format: bool = True,
-                     clip_start_time: Optional[float] = None) -> str:
+                     clip_start_time: Optional[float] = None, style_template: str = "Classic") -> str:
         video_path = Path(video_path)
         if not video_path.exists():
             raise FileNotFoundError(f"Video file not found: {video_path}")
@@ -81,12 +81,24 @@ class SubtitleGenerator:
             fourcc = cv2.VideoWriter_fourcc(*'mp4v')
             out = cv2.VideoWriter(temp_video_path, fourcc, fps, (width, height))
             
-            # Get subtitle style
-            style = VERTICAL_SUBTITLE_STYLE if vertical_format else SUBTITLE_STYLE
+            # Get subtitle style from template
+            if style_template in SUBTITLE_TEMPLATES:
+                template = SUBTITLE_TEMPLATES[style_template]
+                style_settings = template['vertical'] if vertical_format else template['horizontal']
+            else:
+                # Fallback to default styles
+                style = VERTICAL_SUBTITLE_STYLE if vertical_format else SUBTITLE_STYLE
+                style_settings = {
+                    'fontsize': style['fontsize'],
+                    'color': (255, 255, 255) if style['color'] == 'white' else (0, 0, 0),
+                    'stroke_color': (0, 0, 0) if style['stroke_color'] == 'black' else (255, 255, 255),
+                    'stroke_width': style['stroke_width'],
+                    'position': style['position'][1] if isinstance(style['position'], tuple) else style['position']
+                }
             
             # Setup font
             try:
-                font = ImageFont.truetype(self.font_path, style['fontsize'])
+                font = ImageFont.truetype(self.font_path, style_settings['fontsize'])
             except:
                 print(f"Warning: Could not load font from {self.font_path}, using default")
                 font = ImageFont.load_default()
@@ -137,13 +149,13 @@ class SubtitleGenerator:
                     
                     # Position based on style
                     x = (width - text_width) // 2
-                    y_position = style['position'][1] if isinstance(style['position'][1], (int, float)) else 0.7
+                    y_position = style_settings['position']
                     y = int(height * y_position) - text_height // 2
                     
                     # Draw text with outline (stroke)
-                    stroke_width = style['stroke_width']
-                    stroke_color = (0, 0, 0)  # Black outline
-                    text_color = (255, 255, 255)  # White text
+                    stroke_width = style_settings['stroke_width']
+                    stroke_color = style_settings['stroke_color']
+                    text_color = style_settings['color']
                     
                     # Draw stroke
                     for adj_x in range(-stroke_width, stroke_width + 1):

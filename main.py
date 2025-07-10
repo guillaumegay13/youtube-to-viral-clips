@@ -53,6 +53,9 @@ Examples:
     parser.add_argument('--format', type=str, default='vertical',
                        choices=['vertical', 'horizontal'],
                        help='Output format: vertical (9:16) for social media or horizontal (16:9) (default: vertical)')
+    parser.add_argument('--subtitle-style', type=str, default='Classic',
+                       choices=['Classic', 'Bold Yellow', 'Minimal', 'TikTok Style', 'Neon'],
+                       help='Subtitle style template (default: Classic)')
     
     args = parser.parse_args()
     
@@ -176,7 +179,8 @@ Examples:
                         metadata.get('original_end', metadata['end_time']),
                         output_name,
                         vertical_format=(args.format == 'vertical'),
-                        clip_start_time=metadata['start_time']
+                        clip_start_time=metadata['start_time'],
+                        style_template=args.subtitle_style
                     )
                     final_clips.append(subtitled_path)
                     progress.update()

@@ -12,7 +12,7 @@ from modules.analyzer import ViralMomentAnalyzer
 from modules.video_processor import VideoProcessor
 from modules.subtitle_generator import SubtitleGenerator
 from utils.helpers import check_dependencies, format_time
-from config import DEFAULT_NUM_CLIPS, OUTPUTS_DIR
+from config import DEFAULT_NUM_CLIPS, OUTPUTS_DIR, SUBTITLE_TEMPLATES
 
 # Page config
 st.set_page_config(
@@ -36,6 +36,15 @@ st.markdown("""
     
     /* Text */
     p, span, label {
+        color: black !important;
+    }
+    
+    /* Captions */
+    .caption {
+        color: black !important;
+    }
+    
+    [data-testid="caption"] {
         color: black !important;
     }
     
@@ -88,6 +97,37 @@ st.markdown("""
         border: 1px solid black;
         border-radius: 4px;
         background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Selectbox label */
+    .stSelectbox > label {
+        color: black !important;
+    }
+    
+    /* Selectbox dropdown options */
+    .stSelectbox [data-baseweb="select"] {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .stSelectbox [data-baseweb="select"] > div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Dropdown menu items */
+    [data-baseweb="menu"] {
+        background-color: white !important;
+    }
+    
+    [data-baseweb="menu"] li {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    [data-baseweb="menu"] li:hover {
+        background-color: #f0f0f0 !important;
         color: black !important;
     }
     
@@ -209,6 +249,12 @@ if 'processing' not in st.session_state:
     st.session_state.processing = False
 if 'results' not in st.session_state:
     st.session_state.results = None
+if 'subtitle_style' not in st.session_state:
+    st.session_state.subtitle_style = "Classic"
+if 'show_subtitles' not in st.session_state:
+    st.session_state.show_subtitles = True
+if 'vertical_format' not in st.session_state:
+    st.session_state.vertical_format = True
 
 # Main form
 with st.form("extraction_form"):
@@ -244,19 +290,77 @@ with st.form("extraction_form"):
         # Format checkbox
         vertical_format = st.checkbox(
             "Vertical Format (9:16)",
-            value=True,
-            help="Perfect for TikTok, Instagram Reels, YouTube Shorts"
+            value=st.session_state.vertical_format,
+            help="Perfect for TikTok, Instagram Reels, YouTube Shorts",
+            key="vertical_format_checkbox"
         )
         
         # Add subtitles
         add_subtitles = st.checkbox(
             "Add Subtitles",
-            value=True,
-            help="Add animated word-by-word subtitles"
+            value=st.session_state.show_subtitles,
+            help="Add animated word-by-word subtitles",
+            key="add_subtitles_checkbox"
         )
     
     # Submit button
     submitted = st.form_submit_button("🚀 Extract Viral Clips", use_container_width=True)
+
+# Update session state
+if 'vertical_format_checkbox' in st.session_state:
+    st.session_state.vertical_format = st.session_state.vertical_format_checkbox
+if 'add_subtitles_checkbox' in st.session_state:
+    st.session_state.show_subtitles = st.session_state.add_subtitles_checkbox
+
+# Subtitle style selector (outside form for dynamic updates)
+if st.session_state.show_subtitles:
+    st.divider()
+    st.subheader("Subtitle Style")
+    
+    # Create style preview
+    style_options = list(SUBTITLE_TEMPLATES.keys())
+    
+    subtitle_style = st.selectbox(
+        "Choose Style",
+        options=style_options,
+        format_func=lambda x: f"{x} - {SUBTITLE_TEMPLATES[x]['description']}",
+        help="Select a subtitle style template",
+        index=style_options.index(st.session_state.subtitle_style),
+        key="subtitle_style_selector"
+    )
+    
+    # Update session state
+    st.session_state.subtitle_style = subtitle_style
+    
+    # Show style preview - this will update dynamically
+    selected_template = SUBTITLE_TEMPLATES[subtitle_style]
+    col1, col2 = st.columns(2)
+    
+    # Use the vertical format from session state
+    format_type = "vertical" if st.session_state.vertical_format else "horizontal"
+    settings = selected_template[format_type]
+    
+    with col1:
+        st.caption("Style Preview:")
+        st.markdown(f"""
+        <div style="color: black;">
+            • Font Size: {settings['fontsize']}px<br>
+            • Position: {int(settings['position'] * 100)}% from top
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.caption("Colors:")
+        # Create color preview boxes using HTML
+        color_html = f"""
+        <div style="display: flex; gap: 10px; align-items: center; color: black;">
+            <div style="width: 30px; height: 30px; background-color: rgb{settings['color']}; border: 1px solid black;"></div>
+            <span style="color: black;">Text</span>
+            <div style="width: 30px; height: 30px; background-color: rgb{settings['stroke_color']}; border: 1px solid black;"></div>
+            <span style="color: black;">Outline</span>
+        </div>
+        """
+        st.markdown(color_html, unsafe_allow_html=True)
 
 # Process the video
 if submitted and url:
@@ -375,7 +479,8 @@ if submitted and url:
                                 metadata.get('original_end', metadata['end_time']),
                                 output_name,
                                 vertical_format=vertical_format,
-                                clip_start_time=metadata['start_time']
+                                clip_start_time=metadata['start_time'],
+                                style_template=st.session_state.subtitle_style
                             )
                             subtitled_clips.append(subtitled_path)
                         except Exception as e:

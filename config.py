@@ -36,6 +36,95 @@ VERTICAL_SUBTITLE_STYLE = {
     "method": "caption"
 }
 
+# Subtitle style templates
+SUBTITLE_TEMPLATES = {
+    "Classic": {
+        "description": "White text with black outline",
+        "horizontal": {
+            "fontsize": 80,
+            "color": (255, 255, 255),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 4,
+            "position": 0.85
+        },
+        "vertical": {
+            "fontsize": 100,
+            "color": (255, 255, 255),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 5,
+            "position": 0.7
+        }
+    },
+    "Bold Yellow": {
+        "description": "Yellow text with thick black outline",
+        "horizontal": {
+            "fontsize": 85,
+            "color": (255, 255, 0),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 6,
+            "position": 0.85
+        },
+        "vertical": {
+            "fontsize": 110,
+            "color": (255, 255, 0),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 7,
+            "position": 0.7
+        }
+    },
+    "Minimal": {
+        "description": "Small white text with thin outline",
+        "horizontal": {
+            "fontsize": 60,
+            "color": (255, 255, 255),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 2,
+            "position": 0.9
+        },
+        "vertical": {
+            "fontsize": 80,
+            "color": (255, 255, 255),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 3,
+            "position": 0.8
+        }
+    },
+    "TikTok Style": {
+        "description": "Large white text with red/blue shadow",
+        "horizontal": {
+            "fontsize": 90,
+            "color": (255, 255, 255),
+            "stroke_color": (255, 0, 100),
+            "stroke_width": 4,
+            "position": 0.5
+        },
+        "vertical": {
+            "fontsize": 120,
+            "color": (255, 255, 255),
+            "stroke_color": (255, 0, 100),
+            "stroke_width": 5,
+            "position": 0.5
+        }
+    },
+    "Neon": {
+        "description": "Cyan text with purple glow",
+        "horizontal": {
+            "fontsize": 85,
+            "color": (0, 255, 255),
+            "stroke_color": (128, 0, 255),
+            "stroke_width": 5,
+            "position": 0.85
+        },
+        "vertical": {
+            "fontsize": 105,
+            "color": (0, 255, 255),
+            "stroke_color": (128, 0, 255),
+            "stroke_width": 6,
+            "position": 0.7
+        }
+    }
+}
+
 VIRAL_ANALYSIS_PROMPT = """Analyze this transcript segment for viral potential. 
 Score from 0-10 based on: humor, emotion, surprisingness, quotability.
 Provide a brief explanation of why this could go viral.
