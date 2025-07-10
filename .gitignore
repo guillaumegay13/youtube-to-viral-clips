@@ -2,3 +2,6 @@ outputs/
 transcripts/
 downloads/
 .env
+modules/__pycache__/
+.claude/
+__pycache__/
