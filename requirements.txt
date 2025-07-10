@@ -1,9 +1,11 @@
 yt-dlp>=2024.1.0
 openai-whisper>=20231117
 ffmpeg-python>=0.2.0
-moviepy>=1.0.3
 ollama>=0.1.0
 numpy>=1.24.0
 requests>=2.31.0
 tqdm>=4.66.0
 argparse>=1.4.0
+opencv-python>=4.8.0
+pillow>=10.0.0
+streamlit>=1.28.0

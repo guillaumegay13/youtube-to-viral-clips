@@ -44,7 +44,16 @@ ollama serve
 
 ## Usage
 
-### Basic Usage
+### Web Interface (Recommended)
+
+Run the Streamlit web app:
+```bash
+streamlit run app.py
+```
+
+Then open your browser to http://localhost:8501
+
+### Command Line Usage
 
 Extract viral moments from a YouTube video:
 ```bash
