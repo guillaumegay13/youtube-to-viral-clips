@@ -45,14 +45,16 @@ SUBTITLE_TEMPLATES = {
             "color": (255, 255, 255),
             "stroke_color": (0, 0, 0),
             "stroke_width": 4,
-            "position": 0.85
+            "position": 0.85,
+            "max_words": 3
         },
         "vertical": {
             "fontsize": 100,
             "color": (255, 255, 255),
             "stroke_color": (0, 0, 0),
             "stroke_width": 5,
-            "position": 0.7
+            "position": 0.7,
+            "max_words": 2
         }
     },
     "Bold Yellow": {
@@ -62,14 +64,16 @@ SUBTITLE_TEMPLATES = {
             "color": (255, 255, 0),
             "stroke_color": (0, 0, 0),
             "stroke_width": 6,
-            "position": 0.85
+            "position": 0.85,
+            "max_words": 3
         },
         "vertical": {
             "fontsize": 110,
             "color": (255, 255, 0),
             "stroke_color": (0, 0, 0),
             "stroke_width": 7,
-            "position": 0.7
+            "position": 0.7,
+            "max_words": 2
         }
     },
     "Minimal": {
@@ -79,14 +83,16 @@ SUBTITLE_TEMPLATES = {
             "color": (255, 255, 255),
             "stroke_color": (0, 0, 0),
             "stroke_width": 2,
-            "position": 0.9
+            "position": 0.9,
+            "max_words": 4
         },
         "vertical": {
             "fontsize": 80,
             "color": (255, 255, 255),
             "stroke_color": (0, 0, 0),
             "stroke_width": 3,
-            "position": 0.8
+            "position": 0.8,
+            "max_words": 3
         }
     },
     "TikTok Style": {
@@ -96,14 +102,16 @@ SUBTITLE_TEMPLATES = {
             "color": (255, 255, 255),
             "stroke_color": (255, 0, 100),
             "stroke_width": 4,
-            "position": 0.5
+            "position": 0.5,
+            "max_words": 2
         },
         "vertical": {
             "fontsize": 120,
             "color": (255, 255, 255),
             "stroke_color": (255, 0, 100),
             "stroke_width": 5,
-            "position": 0.5
+            "position": 0.5,
+            "max_words": 2
         }
     },
     "Neon": {
@@ -113,14 +121,16 @@ SUBTITLE_TEMPLATES = {
             "color": (0, 255, 255),
             "stroke_color": (128, 0, 255),
             "stroke_width": 5,
-            "position": 0.85
+            "position": 0.85,
+            "max_words": 3
         },
         "vertical": {
             "fontsize": 105,
             "color": (0, 255, 255),
             "stroke_color": (128, 0, 255),
             "stroke_width": 6,
-            "position": 0.7
+            "position": 0.7,
+            "max_words": 2
         }
     }
 }

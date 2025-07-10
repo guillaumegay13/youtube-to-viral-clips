@@ -52,7 +52,8 @@ class SubtitleGenerator:
     def add_subtitles(self, video_path: str, transcript: Dict, 
                      start_time: float, end_time: float,
                      output_name: Optional[str] = None, vertical_format: bool = True,
-                     clip_start_time: Optional[float] = None, style_template: str = "Classic") -> str:
+                     clip_start_time: Optional[float] = None, style_template: str = "Classic",
+                     language: str = "en") -> str:
         video_path = Path(video_path)
         if not video_path.exists():
             raise FileNotFoundError(f"Video file not found: {video_path}")
@@ -116,7 +117,11 @@ class SubtitleGenerator:
                 video_offset + (total_frames / fps)
             )
             
-            print(f"Adding subtitles to {total_frames} frames ({len(words)} words)...")
+            # Group words intelligently
+            max_words = style_settings.get('max_words', 3)
+            word_groups = self._group_words(words, max_words, language)
+            
+            print(f"Adding subtitles to {total_frames} frames ({len(words)} words in {len(word_groups)} groups)...")
             
             frame_count = 0
             
@@ -128,15 +133,14 @@ class SubtitleGenerator:
                 current_time = frame_count / fps
                 video_time = video_offset + current_time
                 
-                # Find current word(s) to display
-                current_words = []
-                for word_data in words:
-                    if word_data['start'] <= video_time <= word_data['end']:
-                        current_words.append(word_data['word'])
+                # Find current word group to display
+                current_text = None
+                for group in word_groups:
+                    if group['start'] <= video_time <= group['end']:
+                        current_text = group['text']
+                        break
                 
-                if current_words:
-                    # Join words that appear at the same time
-                    current_text = ' '.join(current_words)
+                if current_text:
                     
                     # Convert frame to PIL Image
                     img_pil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
@@ -212,6 +216,85 @@ class SubtitleGenerator:
             if 'temp_video_path' in locals() and os.path.exists(temp_video_path):
                 os.unlink(temp_video_path)
             raise Exception(f"Error adding subtitles: {str(e)}")
+    
+    def _group_words(self, words: List[Dict], max_words: int = 3, language: str = "en") -> List[Dict]:
+        """Group words intelligently for better readability"""
+        if not words:
+            return []
+        
+        # Common short words that should be grouped with the next word
+        if language == "fr":
+            # French short words
+            short_words = {
+                'le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'à', 'au', 'aux',
+                'et', 'ou', 'mais', 'donc', 'or', 'ni', 'car', 'que', 'qui', 'où',
+                'ce', 'ces', 'cet', 'cette', 'mon', 'ma', 'mes', 'ton', 'ta', 'tes',
+                'son', 'sa', 'ses', 'notre', 'nos', 'votre', 'vos', 'leur', 'leurs',
+                'je', 'tu', 'il', 'elle', 'on', 'nous', 'vous', 'ils', 'elles',
+                'me', 'te', 'se', 'ne', 'y', 'en', 'lui', 'leur',
+                'est', 'sont', 'suis', 'es', 'êtes', 'sommes', 'ai', 'as', 'a',
+                'ont', 'avons', 'avez', "j'ai", "c'est", "n'est", "qu'est",
+                'd\'un', 'd\'une', 'l\'un', 'l\'une', 'jusqu\'à', 'qu\'il', 'qu\'elle'
+            }
+        else:
+            # English short words
+            short_words = {
+                'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'with',
+                'and', 'or', 'but', 'is', 'are', 'was', 'were', 'be', 'been',
+                'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
+                'could', 'should', 'may', 'might', 'can', "can't", "don't",
+                "won't", "isn't", "aren't", "wasn't", "weren't", "i'm", "you're",
+                "he's", "she's", "it's", "we're", "they're", "i've", "you've",
+                "we've", "they've", "i'll", "you'll", "he'll", "she'll", "we'll"
+            }
+        
+        groups = []
+        current_group = []
+        current_start = None
+        current_end = None
+        
+        for i, word in enumerate(words):
+            word_text = word['word'].strip().lower()
+            
+            # Start a new group if needed
+            if current_start is None:
+                current_start = word['start']
+            
+            current_group.append(word['word'].strip())
+            current_end = word['end']
+            
+            # Decide if we should continue grouping
+            should_continue = False
+            
+            # Check if current word is a short word that should stay with next
+            if i < len(words) - 1:
+                next_word = words[i + 1]
+                time_gap = next_word['start'] - word['end']
+                
+                # Continue if:
+                # 1. Current word is a short word
+                # 2. Time gap is small (less than 0.3 seconds)
+                # 3. Current group has less than max_words
+                # 4. Total character count would be under 30
+                if (word_text in short_words and time_gap < 0.3 and 
+                    len(current_group) < max_words):
+                    should_continue = True
+                elif (len(current_group) < max_words and time_gap < 0.2 and
+                      len(' '.join(current_group + [next_word['word']])) < 30):
+                    should_continue = True
+            
+            # Create group if we shouldn't continue or it's the last word
+            if not should_continue or i == len(words) - 1:
+                groups.append({
+                    'text': ' '.join(current_group),
+                    'start': current_start,
+                    'end': current_end
+                })
+                current_group = []
+                current_start = None
+                current_end = None
+        
+        return groups
 
 
 if __name__ == "__main__":

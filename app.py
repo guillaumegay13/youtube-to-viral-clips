@@ -12,11 +12,16 @@ from modules.analyzer import ViralMomentAnalyzer
 from modules.video_processor import VideoProcessor
 from modules.subtitle_generator import SubtitleGenerator
 from utils.helpers import check_dependencies, format_time
+from utils.translations import get_text
 from config import DEFAULT_NUM_CLIPS, OUTPUTS_DIR, SUBTITLE_TEMPLATES
+
+# Initialize session state for language
+if 'language' not in st.session_state:
+    st.session_state.language = 'en'
 
 # Page config
 st.set_page_config(
-    page_title="YouTube Viral Clips Extractor",
+    page_title=get_text("page_title", st.session_state.language),
     page_icon="🎬",
     layout="centered"
 )
@@ -235,13 +240,22 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Language switcher in the top right
+col1, col2, col3 = st.columns([4, 1, 1])
+with col3:
+    if st.button("🇫🇷 FR" if st.session_state.language == 'en' else "🇬🇧 EN", 
+                 key="lang_switch",
+                 help="Switch language / Changer de langue"):
+        st.session_state.language = 'fr' if st.session_state.language == 'en' else 'en'
+        st.rerun()
+
 # Title
-st.title("🎬 YouTube Viral Clips Extractor")
-st.markdown("Extract viral moments from YouTube videos with AI-generated subtitles")
+st.title(get_text("app_title", st.session_state.language))
+st.markdown(get_text("app_subtitle", st.session_state.language))
 
 # Check dependencies
 if not check_dependencies():
-    st.error("Missing dependencies! Please install FFmpeg and ensure Ollama is running.")
+    st.error(get_text("missing_deps", st.session_state.language))
     st.stop()
 
 # Initialize session state
@@ -260,9 +274,9 @@ if 'vertical_format' not in st.session_state:
 with st.form("extraction_form"):
     # URL input
     url = st.text_input(
-        "YouTube URL",
-        placeholder="https://youtube.com/watch?v=...",
-        help="Paste the YouTube video URL here"
+        get_text("youtube_url", st.session_state.language),
+        placeholder=get_text("url_placeholder", st.session_state.language),
+        help=get_text("url_help", st.session_state.language)
     )
     
     # Two columns for options
@@ -271,40 +285,40 @@ with st.form("extraction_form"):
     with col1:
         # Quality selector
         quality = st.selectbox(
-            "Video Quality",
+            get_text("video_quality", st.session_state.language),
             options=["360p", "480p", "720p", "1080p"],
             index=2,  # Default to 720p
-            help="Higher quality = larger file size"
+            help=get_text("quality_help", st.session_state.language)
         )
         
         # Number of clips
         num_clips = st.number_input(
-            "Number of Clips",
+            get_text("num_clips", st.session_state.language),
             min_value=1,
             max_value=10,
             value=DEFAULT_NUM_CLIPS,
-            help="Maximum number of viral clips to extract"
+            help=get_text("clips_help", st.session_state.language)
         )
     
     with col2:
         # Format checkbox
         vertical_format = st.checkbox(
-            "Vertical Format (9:16)",
+            get_text("vertical_format", st.session_state.language),
             value=st.session_state.vertical_format,
-            help="Perfect for TikTok, Instagram Reels, YouTube Shorts",
+            help=get_text("vertical_help", st.session_state.language),
             key="vertical_format_checkbox"
         )
         
         # Add subtitles
         add_subtitles = st.checkbox(
-            "Add Subtitles",
+            get_text("add_subtitles", st.session_state.language),
             value=st.session_state.show_subtitles,
-            help="Add animated word-by-word subtitles",
+            help=get_text("subtitles_help", st.session_state.language),
             key="add_subtitles_checkbox"
         )
     
     # Submit button
-    submitted = st.form_submit_button("🚀 Extract Viral Clips", use_container_width=True)
+    submitted = st.form_submit_button(get_text("extract_button", st.session_state.language), use_container_width=True)
 
 # Update session state
 if 'vertical_format_checkbox' in st.session_state:
@@ -315,16 +329,21 @@ if 'add_subtitles_checkbox' in st.session_state:
 # Subtitle style selector (outside form for dynamic updates)
 if st.session_state.show_subtitles:
     st.divider()
-    st.subheader("Subtitle Style")
+    st.subheader(get_text("subtitle_style_header", st.session_state.language))
     
-    # Create style preview
+    # Create style preview with translations
     style_options = list(SUBTITLE_TEMPLATES.keys())
     
+    # Get translated style descriptions
+    def get_style_description(style_name):
+        style_key = f"style_{style_name.lower().replace(' ', '_')}"
+        return get_text(style_key, st.session_state.language)
+    
     subtitle_style = st.selectbox(
-        "Choose Style",
+        get_text("choose_style", st.session_state.language),
         options=style_options,
-        format_func=lambda x: f"{x} - {SUBTITLE_TEMPLATES[x]['description']}",
-        help="Select a subtitle style template",
+        format_func=lambda x: f"{x} - {get_style_description(x)}",
+        help=get_text("style_help", st.session_state.language),
         index=style_options.index(st.session_state.subtitle_style),
         key="subtitle_style_selector"
     )
@@ -341,23 +360,23 @@ if st.session_state.show_subtitles:
     settings = selected_template[format_type]
     
     with col1:
-        st.caption("Style Preview:")
+        st.caption(get_text("style_preview", st.session_state.language))
         st.markdown(f"""
         <div style="color: black;">
-            • Font Size: {settings['fontsize']}px<br>
-            • Position: {int(settings['position'] * 100)}% from top
+            • {get_text("font_size", st.session_state.language, size=settings['fontsize'])}<br>
+            • {get_text("position", st.session_state.language, percent=int(settings['position'] * 100))}
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
-        st.caption("Colors:")
+        st.caption(get_text("colors", st.session_state.language))
         # Create color preview boxes using HTML
         color_html = f"""
         <div style="display: flex; gap: 10px; align-items: center; color: black;">
             <div style="width: 30px; height: 30px; background-color: rgb{settings['color']}; border: 1px solid black;"></div>
-            <span style="color: black;">Text</span>
+            <span style="color: black;">{get_text("text_color", st.session_state.language)}</span>
             <div style="width: 30px; height: 30px; background-color: rgb{settings['stroke_color']}; border: 1px solid black;"></div>
-            <span style="color: black;">Outline</span>
+            <span style="color: black;">{get_text("outline_color", st.session_state.language)}</span>
         </div>
         """
         st.markdown(color_html, unsafe_allow_html=True)
@@ -379,12 +398,14 @@ if submitted and url:
                 st.success(f"✅ Downloaded: {video_metadata['title']}")
             
             # Step 2: Transcribe
-            with st.spinner("🎧 Transcribing audio..."):
+            with st.spinner(get_text("transcribing", st.session_state.language)):
                 progress_bar = st.progress(0)
                 transcriber = VideoTranscriber()
-                transcript = transcriber.transcribe(video_path)
+                # Pass language code to Whisper (fr for French, en for English)
+                whisper_lang = 'fr' if st.session_state.language == 'fr' else 'en'
+                transcript = transcriber.transcribe(video_path, language=whisper_lang)
                 progress_bar.progress(100)
-                st.success(f"✅ Transcribed: {len(transcript['segments'])} segments")
+                st.success(get_text("transcribed", st.session_state.language, segments=len(transcript['segments'])))
             
             # Step 3: Analyze
             with st.spinner("🤖 Analyzing for viral moments..."):
@@ -457,6 +478,105 @@ if submitted and url:
                 
                 st.success(f"✅ Extracted {len(clip_paths)} clips!")
             
+            # Step 5.5: Preview and adjust clips (optional)
+            st.divider()
+            st.subheader("✂️ Preview & Adjust Clips")
+            st.info("Preview your clips and fine-tune the start/end times if needed")
+            
+            adjusted_clips = []
+            adjustments_made = False
+            
+            for i, (clip_path, moment) in enumerate(zip(clip_paths, validated_moments)):
+                with st.expander(f"📹 Clip {i+1} - Score: {moment['score']:.1f}/10", expanded=(i==0)):
+                    # Display the video
+                    st.video(clip_path)
+                    
+                    # Get video info
+                    video_info = processor.get_video_info(video_path)
+                    max_duration = video_info['duration']
+                    
+                    # Time adjustment controls
+                    col1, col2, col3 = st.columns([2, 2, 1])
+                    
+                    with col1:
+                        # Start time adjustment
+                        new_start = st.number_input(
+                            "Start time (seconds)",
+                            min_value=0.0,
+                            max_value=max_duration,
+                            value=float(moment['start']),
+                            step=0.1,
+                            format="%.1f",
+                            key=f"start_time_{i}"
+                        )
+                    
+                    with col2:
+                        # End time adjustment
+                        new_end = st.number_input(
+                            "End time (seconds)",
+                            min_value=0.0,
+                            max_value=max_duration,
+                            value=float(moment['end']),
+                            step=0.1,
+                            format="%.1f",
+                            key=f"end_time_{i}"
+                        )
+                    
+                    with col3:
+                        # Show duration
+                        duration = new_end - new_start
+                        st.metric("Duration", f"{duration:.1f}s")
+                    
+                    # Check if adjustments were made
+                    if new_start != moment['start'] or new_end != moment['end']:
+                        adjustments_made = True
+                        st.warning(f"⚠️ Adjusted: {format_time(new_start)} → {format_time(new_end)}")
+                    
+                    # Store adjusted values
+                    adjusted_moment = moment.copy()
+                    adjusted_moment['start'] = new_start
+                    adjusted_moment['end'] = new_end
+                    adjusted_moment['duration'] = new_end - new_start
+                    adjusted_clips.append((clip_path, adjusted_moment))
+            
+            # Re-extract clips if adjustments were made
+            if adjustments_made:
+                if st.button("🔄 Apply Adjustments & Re-extract Clips", type="primary"):
+                    with st.spinner("Re-extracting clips with new timings..."):
+                        new_clip_paths = []
+                        progress_bar = st.progress(0)
+                        
+                        for i, (old_clip_path, adj_moment) in enumerate(adjusted_clips):
+                            output_name = f"viral_clip_{i+1}_score_{adj_moment['score']:.1f}_adjusted"
+                            new_clip_path = processor.extract_clip(
+                                video_path,
+                                adj_moment['start'],
+                                adj_moment['end'],
+                                output_name,
+                                vertical_format=vertical_format
+                            )
+                            new_clip_paths.append(new_clip_path)
+                            
+                            # Update metadata
+                            metadata_path = Path(new_clip_path).with_suffix('.json')
+                            with open(metadata_path, 'w') as f:
+                                json.dump({
+                                    'original_video': str(video_path),
+                                    'start_time': adj_moment['start'],
+                                    'end_time': adj_moment['end'],
+                                    'duration': adj_moment['duration'],
+                                    'score': adj_moment['score'],
+                                    'reason': adj_moment.get('reason', ''),
+                                    'original_start': adj_moment.get('original_start', adj_moment['start']),
+                                    'original_end': adj_moment.get('original_end', adj_moment['end'])
+                                }, f, indent=2)
+                            
+                            progress_bar.progress((i + 1) / len(adjusted_clips))
+                        
+                        clip_paths = new_clip_paths
+                        validated_moments = [adj[1] for adj in adjusted_clips]
+                        st.success("✅ Clips re-extracted with adjusted timings!")
+            
             # Step 6: Add subtitles
             final_clips = clip_paths
             if add_subtitles:
@@ -480,7 +600,8 @@ if submitted and url:
                                 output_name,
                                 vertical_format=vertical_format,
                                 clip_start_time=metadata['start_time'],
-                                style_template=st.session_state.subtitle_style
+                                style_template=st.session_state.subtitle_style,
+                                language=st.session_state.language
                             )
                             subtitled_clips.append(subtitled_path)
                         except Exception as e:
@@ -492,40 +613,64 @@ if submitted and url:
                     final_clips = subtitled_clips
                     st.success(f"✅ Added subtitles to {len(subtitled_clips)} clips!")
             
-            # Show results
+            # Show completion message
             st.balloons()
-            st.success("🎉 Processing complete!")
-            
-            # Display download links
-            st.subheader("📥 Download Your Clips")
-            
-            for i, clip_path in enumerate(final_clips):
-                clip_name = Path(clip_path).name
-                with open(clip_path, 'rb') as f:
-                    st.download_button(
-                        label=f"⬇️ Download {clip_name}",
-                        data=f.read(),
-                        file_name=clip_name,
-                        mime="video/mp4",
-                        key=f"download_{i}"
-                    )
+            st.success(get_text("processing_complete", st.session_state.language))
             
             # Store results in session state
             st.session_state.results = {
                 'clips': final_clips,
-                'metadata': video_metadata
+                'metadata': video_metadata,
+                'moments': validated_moments
             }
             
     except Exception as e:
-        st.error(f"❌ Error: {str(e)}")
+        st.error(get_text("error", st.session_state.language, message=str(e)))
     finally:
         st.session_state.processing = False
 
+# Display results if available (outside the processing block)
+if st.session_state.results and not st.session_state.processing:
+    st.divider()
+    st.success(get_text("processing_complete", st.session_state.language))
+    
+    # Display download links
+    st.subheader(get_text("download_header", st.session_state.language))
+    
+    # Create columns for better layout
+    for i, clip_path in enumerate(st.session_state.results['clips']):
+        clip_name = Path(clip_path).name
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            # Display clip info
+            if i < len(st.session_state.results.get('moments', [])):
+                moment = st.session_state.results['moments'][i]
+                st.write(f"**{clip_name}**")
+                st.caption(f"{get_text('score_label', st.session_state.language, score=moment['score'])} | {get_text('time_range', st.session_state.language, start=format_time(moment['start']), end=format_time(moment['end']))}")
+        
+        with col2:
+            # Download button that doesn't reset the state
+            with open(clip_path, 'rb') as f:
+                clip_data = f.read()
+            
+            st.download_button(
+                label=get_text("download_button", st.session_state.language, filename=clip_name),
+                data=clip_data,
+                file_name=clip_name,
+                mime="video/mp4",
+                key=f"persistent_download_{i}_{clip_name}"  # Unique key that persists
+            )
+    
+    # Add a button to process a new video
+    if st.button("🎬 " + ("Traiter une Nouvelle Vidéo" if st.session_state.language == 'fr' else "Process New Video")):
+        st.session_state.results = None
+        st.rerun()
+
 # Footer
 st.divider()
-st.markdown("""
+st.markdown(f"""
 <div style="text-align: center; color: #666; font-size: 0.9em;">
-Made with ❤️ using OpenAI Whisper, Ollama, and FFmpeg<br>
-Ensure Ollama is running: <code>ollama serve</code>
+{get_text("footer", st.session_state.language)}
 </div>
 """, unsafe_allow_html=True)

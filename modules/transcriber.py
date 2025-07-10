@@ -21,7 +21,7 @@ class VideoTranscriber:
             self.model = whisper.load_model(self.model_name)
             print("Model loaded successfully")
     
-    def transcribe(self, video_path: str, force: bool = False) -> Dict[str, any]:
+    def transcribe(self, video_path: str, force: bool = False, language: str = None) -> Dict[str, any]:
         video_path = Path(video_path)
         if not video_path.exists():
             raise FileNotFoundError(f"Video file not found: {video_path}")
@@ -38,9 +38,12 @@ class VideoTranscriber:
         print(f"Transcribing: {video_path.name}")
         
         try:
+            # Use provided language or auto-detect
+            whisper_language = language if language else WHISPER_LANGUAGE
+            
             result = self.model.transcribe(
                 str(video_path),
-                language=WHISPER_LANGUAGE,
+                language=whisper_language,
                 task=WHISPER_TASK,
                 verbose=False,
                 word_timestamps=True,
