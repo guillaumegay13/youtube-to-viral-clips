@@ -17,9 +17,24 @@ class VideoTranscriber:
         
     def _load_model(self):
         if self.model is None:
-            print(f"Loading Whisper model: {self.model_name}")
-            self.model = whisper.load_model(self.model_name)
-            print("Model loaded successfully")
+            # Load Whisper model
+            
+            # Suppress PyTorch warnings about torch.classes
+            import warnings
+            import logging
+            
+            # Temporarily suppress warnings during model loading
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", message=".*torch.classes.*")
+                warnings.filterwarnings("ignore", message=".*Tried to instantiate class.*")
+                warnings.filterwarnings("ignore", message=".*Examining the path of torch.classes.*")
+                
+                # Also suppress logging warnings
+                logging.getLogger("torch").setLevel(logging.ERROR)
+                
+                self.model = whisper.load_model(self.model_name)
+            
+            # Model loaded
     
     def transcribe(self, video_path: str, force: bool = False, language: str = None) -> Dict[str, any]:
         video_path = Path(video_path)
@@ -29,22 +44,24 @@ class VideoTranscriber:
         transcript_path = self.transcripts_dir / f"{video_path.stem}_transcript.json"
         
         if transcript_path.exists() and not force:
-            print(f"Loading existing transcript from: {transcript_path}")
+            # Load existing transcript
             with open(transcript_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         
         self._load_model()
         
-        print(f"Transcribing: {video_path.name}")
+        # Transcribe video
         
         try:
             # Use provided language or auto-detect
             whisper_language = language if language else WHISPER_LANGUAGE
             
+            # IMPORTANT: Always use "transcribe" task to keep original language
+            # Never use "translate" which would convert to English
             result = self.model.transcribe(
                 str(video_path),
                 language=whisper_language,
-                task=WHISPER_TASK,
+                task="transcribe",  # Force transcribe, not translate
                 verbose=False,
                 word_timestamps=True,
                 fp16=False  
@@ -82,9 +99,7 @@ class VideoTranscriber:
             with open(transcript_path, 'w', encoding='utf-8') as f:
                 json.dump(transcript_data, f, indent=2, ensure_ascii=False)
             
-            print(f"Transcript saved to: {transcript_path}")
-            print(f"Total segments: {len(segments)}")
-            print(f"Language detected: {transcript_data['language']}")
+            # Transcript saved
             
             return transcript_data
             
@@ -129,8 +144,8 @@ if __name__ == "__main__":
     
     try:
         transcript = transcriber.transcribe(video_path)
-        print(f"\nTranscription complete!")
-        print(f"Full text preview (first 200 chars):")
-        print(transcript['full_text'][:200] + "...")
+        # Transcription complete
+        pass
     except Exception as e:
-        print(f"Error: {e}")
+        # Error occurred
+        pass

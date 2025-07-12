@@ -27,7 +27,7 @@ class VideoProcessor:
         output_path = self.output_dir / output_filename
         
         try:
-            print(f"Extracting clip: {start_time:.1f}s - {end_time:.1f}s ({duration:.1f}s)")
+            # Extract clip segment
             
             input_stream = ffmpeg.input(str(video_path), ss=start_time, t=duration)
             
@@ -89,7 +89,7 @@ class VideoProcessor:
             if not output_path.exists():
                 raise Exception("Output file was not created")
             
-            print(f"Clip saved to: {output_path}")
+            # Clip saved
             return str(output_path)
             
         except ffmpeg.Error as e:
@@ -127,7 +127,7 @@ class VideoProcessor:
                     }, f, indent=2)
                     
             except Exception as e:
-                print(f"Failed to extract clip {i+1}: {e}")
+                # Failed to extract clip
                 continue
         
         return output_paths
@@ -186,7 +186,8 @@ class VideoProcessor:
                 moment['duration'] = moment['end'] - moment['start']
                 valid_moments.append(moment)
             else:
-                print(f"Skipping invalid moment: start={moment['start']}, end={moment['end']}")
+                # Skip invalid moment
+                pass
         
         return valid_moments
 
@@ -200,6 +201,6 @@ if __name__ == "__main__":
     
     try:
         output_path = processor.extract_clip(video_path, start_time, end_time)
-        print(f"Clip successfully created: {output_path}")
+        output_path = processor.extract_clip(video_path, start_time, end_time)
     except Exception as e:
-        print(f"Error: {e}")
+        pass

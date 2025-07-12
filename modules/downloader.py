@@ -36,16 +36,18 @@ class YouTubeDownloader:
         
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                print(f"Fetching video information for: {url}")
+                # Fetch video information
                 info_dict = ydl.extract_info(url, download=False)
                 
                 title = info_dict.get('title', 'Unknown')
                 duration = info_dict.get('duration', 0)
                 
-                if duration > 3600:  
-                    raise ValueError(f"Video too long: {duration} seconds. Maximum allowed: 3600 seconds")
+                # Allow longer videos but warn if very long
+                if duration > 7200:  # 2 hours
+                    # Long video - processing may take time
+                    pass
                 
-                print(f"Downloading: {title}")
+                # Download video
                 info_dict = ydl.extract_info(url, download=True)
                 
                 filename = ydl.prepare_filename(info_dict)
@@ -77,8 +79,7 @@ class YouTubeDownloader:
                 with open(metadata_path, 'w', encoding='utf-8') as f:
                     json.dump(metadata, f, indent=2, ensure_ascii=False)
                 
-                print(f"Download complete: {filepath}")
-                print(f"Video duration: {duration} seconds")
+                # Download complete
                 
                 return metadata
                 
@@ -107,6 +108,7 @@ if __name__ == "__main__":
     test_url = input("Enter YouTube URL to test: ")
     try:
         metadata = downloader.download(test_url)
-        print(f"Successfully downloaded: {metadata['title']}")
+        # Download complete
     except Exception as e:
-        print(f"Error: {e}")
+        # Error occurred
+        pass

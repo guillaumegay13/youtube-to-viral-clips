@@ -1,28 +1,33 @@
-# YouTube Video Viral Moment Extractor
+# YouTube to Viral Clips
 
-Automatically extract viral moments from YouTube videos and create short clips with animated subtitles using AI.
+Submagic free open source alternative that can run with local AI model using Ollama and OpenAI Whisper (no API key needed).
+
+## Overview
+
+This tool downloads YouTube videos, transcribes them using OpenAI Whisper, analyzes the content for viral potential using AI (Ollama/OpenAI/Anthropic), and automatically extracts the most engaging clips with optional subtitles.
 
 ## Features
 
-- 🎥 Download YouTube videos automatically
-- 🎧 Transcribe audio using OpenAI Whisper (locally)
-- 🤖 Analyze transcript for viral potential using local LLM (Ollama)
-- ✂️ Extract clips with configurable duration (15-60 seconds)
-- 🎨 Add word-by-word animated subtitles
-- 📊 Generate summary reports
+- Automatic viral moment detection with customizable scoring threshold
+- Multi-language support (transcription and subtitles)
+- Parallel clip extraction for faster processing
+- Multiple AI providers: Ollama (local), OpenAI, Anthropic
+- Customizable subtitle styles optimized for social media
+- Vertical format option for TikTok/Reels/Shorts
+- Clean, minimal web interface
 
-## Prerequisites
+## Requirements
 
-1. **Python 3.8+**
-2. **FFmpeg** - [Download here](https://ffmpeg.org/download.html)
-3. **Ollama** - [Install from here](https://ollama.ai/)
+- Python 3.8+
+- FFmpeg
+- Ollama (for local AI) or API keys for OpenAI/Anthropic
 
 ## Installation
 
-1. Clone this repository:
+1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd youtube-viral-extractor
+git clone https://github.com/yourusername/youtube-to-viral-clips.git
+cd youtube-to-viral-clips
 ```
 
 2. Install Python dependencies:
@@ -30,126 +35,139 @@ cd youtube-viral-extractor
 pip install -r requirements.txt
 ```
 
-3. Install and setup Ollama:
+3. Install FFmpeg:
 ```bash
-# Install Ollama (macOS/Linux)
+# macOS
+brew install ffmpeg
+
+# Ubuntu/Debian
+sudo apt update
+sudo apt install ffmpeg
+
+# Windows
+# Download from https://ffmpeg.org/download.html
+```
+
+4. Set up AI provider:
+
+For Ollama (local, free):
+```bash
+# Install Ollama
 curl -fsSL https://ollama.ai/install.sh | sh
 
-# Pull the LLM model
-ollama pull llama2
+# Pull a model
+ollama pull llama3.2
 
-# Start Ollama service
+# Start Ollama server
 ollama serve
+```
+
+For OpenAI:
+```bash
+export OPENAI_API_KEY="your-api-key"
+```
+
+For Anthropic:
+```bash
+export ANTHROPIC_API_KEY="your-api-key"
 ```
 
 ## Usage
 
-### Web Interface (Recommended)
+### Web Interface
 
-Run the Streamlit web app:
+Run the Streamlit app:
 ```bash
 streamlit run app.py
 ```
 
-Then open your browser to http://localhost:8501
+Then open http://localhost:8501 in your browser.
 
-### Command Line Usage
+### Command Line
 
-Extract viral moments from a YouTube video:
-```bash
-python main.py --url "https://youtube.com/watch?v=VIDEO_ID"
-```
+For direct Python usage:
+```python
+from modules.downloader import YouTubeDownloader
+from modules.transcriber import VideoTranscriber
+from modules.analyzer import ViralMomentAnalyzer
+from modules.video_processor import VideoProcessor
 
-### Advanced Options
+# Download video
+downloader = YouTubeDownloader()
+video_data = downloader.download("https://youtube.com/watch?v=...", "720p")
 
-```bash
-# Specify video quality and number of clips
-python main.py --url "https://youtube.com/watch?v=..." --quality 1080p --clips 3
+# Transcribe
+transcriber = VideoTranscriber()
+transcript = transcriber.transcribe(video_data['filepath'])
 
-# Skip subtitle generation
-python main.py --url "https://youtube.com/watch?v=..." --no-subtitles
+# Analyze for viral moments
+analyzer = ViralMomentAnalyzer(provider="ollama")
+viral_moments = analyzer.analyze_transcript(transcript)
 
-# Use local video file
-python main.py --file "path/to/video.mp4" --clips 5
-
-# Force re-transcription
-python main.py --url "https://youtube.com/watch?v=..." --force-transcribe
-```
-
-### Command Line Arguments
-
-- `--url`: YouTube video URL
-- `--file`: Local video file path (alternative to URL)
-- `--quality`: Video download quality (360p/480p/720p/1080p, default: 720p)
-- `--clips`: Maximum number of clips to generate (default: 5)
-- `--no-subtitles`: Skip adding subtitles to clips
-- `--force-transcribe`: Force re-transcription even if transcript exists
-- `--output-dir`: Custom output directory for clips
-
-## Project Structure
-
-```
-youtube-viral-extractor/
-├── main.py                 # Main application entry point
-├── config.py              # Configuration settings
-├── requirements.txt       # Python dependencies
-├── modules/
-│   ├── downloader.py      # YouTube video downloader
-│   ├── transcriber.py     # Whisper transcription module
-│   ├── analyzer.py        # Viral moment analysis
-│   ├── video_processor.py # Video clip extraction
-│   └── subtitle_generator.py # Subtitle generation
-├── utils/
-│   └── helpers.py         # Utility functions
-├── downloads/             # Downloaded videos
-├── outputs/              # Generated clips
-└── transcripts/          # Saved transcripts
+# Extract clips
+processor = VideoProcessor()
+for moment in viral_moments[:3]:
+    processor.extract_clip(
+        video_data['filepath'],
+        moment['start'],
+        moment['end'],
+        f"clip_score_{moment['score']:.1f}"
+    )
 ```
 
 ## Configuration
 
 Edit `config.py` to customize:
 
-- Video quality and clip duration limits
-- Whisper model size (base/small/medium/large)
-- LLM model for analysis
-- Subtitle styling
-- Viral score thresholds
+- `AI_PROVIDER`: Choose between "ollama", "openai", or "anthropic"
+- `MIN_VIRAL_SCORE`: Minimum score threshold (0-10)
+- `MIN_CLIP_LENGTH`: Minimum clip duration in seconds
+- `MAX_CLIP_LENGTH`: Maximum clip duration in seconds
+- `WHISPER_MODEL`: Whisper model size ("base", "small", "medium", "large")
 
-## How It Works
+## Subtitle Styles
 
-1. **Download**: The app downloads the YouTube video in your specified quality
-2. **Transcribe**: Whisper generates a word-level transcript with timestamps
-3. **Analyze**: The local LLM analyzes transcript chunks for viral potential
-4. **Extract**: FFmpeg extracts clips based on high-scoring moments
-5. **Subtitle**: MoviePy adds animated word-by-word subtitles
-6. **Output**: Final clips are saved with metadata and summary report
+Available subtitle templates:
+- Classic: White text with black outline
+- Bold Yellow: Yellow text with thick black outline
+- Minimal: Small white text with thin outline
+- TikTok Style: Large white text with colored shadow
+- Neon: Cyan text with purple glow
+- Ultra Bold: Extra thick white text
+- Viral Bold: Massive white text for maximum impact
+
+## Output
+
+Clips are saved to the `outputs/` directory with the following naming:
+- `clip_1_score_8.5.mp4` (without subtitles)
+- `clip_1_final.mp4` (with subtitles)
+
+## API Keys
+
+Create a `.env` file in the project root:
+```
+OPENAI_API_KEY=your-openai-key
+ANTHROPIC_API_KEY=your-anthropic-key
+```
 
 ## Troubleshooting
 
-### FFmpeg not found
-- Ensure FFmpeg is installed and in your PATH
-- Test with: `ffmpeg -version`
+### "Missing dependencies" error
+Ensure FFmpeg is installed and accessible in your PATH.
 
-### Ollama connection error
-- Make sure Ollama is running: `ollama serve`
-- Check if model is installed: `ollama list`
+### "Ollama connection failed"
+Start the Ollama server with `ollama serve`.
 
-### Whisper model download
-- First run will download the Whisper model (~140MB for base)
-- Ensure you have sufficient disk space
+### "No viral moments found"
+Try lowering the minimum score threshold or using a different video.
 
-### Memory issues
-- For long videos, consider using smaller Whisper models
-- Close other applications to free up RAM
-
-## Performance Tips
-
-- Use GPU acceleration if available (CUDA for NVIDIA)
-- Start with "base" Whisper model for faster processing
-- Process shorter videos (<30 min) for best results
-- Run on videos with clear speech for better transcription
+### Subtitle language issues
+The tool automatically detects the video language. Ensure Whisper's transcription task is set to "transcribe" (not "translate") in config.py.
 
 ## License
 
-This project is provided as-is for educational purposes. Ensure you have the right to download and process any videos you use with this tool.
+MIT License
+
+## Contributing
+
+Pull requests welcome. For major changes, please open an issue first.

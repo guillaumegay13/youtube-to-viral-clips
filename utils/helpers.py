@@ -32,9 +32,7 @@ def check_dependencies():
             missing.append((cmd, message))
     
     if missing:
-        print("Missing dependencies:")
-        for cmd, msg in missing:
-            print(f"  - {cmd}: {msg}")
+        # Missing dependencies found
         return False
     
     return True
@@ -55,7 +53,7 @@ def load_json_file(filepath: Path) -> Optional[Dict]:
         with open(filepath, 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
-        print(f"Error loading JSON file {filepath}: {e}")
+        # Error loading JSON
         return None
 
 
@@ -65,7 +63,7 @@ def save_json_file(data: Dict, filepath: Path) -> bool:
             json.dump(data, f, indent=2, ensure_ascii=False)
         return True
     except Exception as e:
-        print(f"Error saving JSON file {filepath}: {e}")
+        # Error saving JSON
         return False
 
 
@@ -83,48 +81,20 @@ def get_file_size_mb(filepath: Path) -> float:
 
 
 def print_moments_table(moments: List[Dict]):
-    print("\n" + "="*70)
-    print(f"{'No.':<5} {'Time Range':<20} {'Score':<10} {'Reason':<35}")
-    print("="*70)
-    
-    for i, moment in enumerate(moments):
-        time_range = f"{format_time(moment['start'])} - {format_time(moment['end'])}"
-        reason = moment['reason'][:32] + "..." if len(moment['reason']) > 35 else moment['reason']
-        print(f"{i+1:<5} {time_range:<20} {moment['score']:<10.1f} {reason:<35}")
-    
-    print("="*70)
+    # Display moments in table format
+    pass
 
 
 def select_moments(moments: List[Dict], max_clips: Optional[int] = None) -> List[Dict]:
     if not moments:
         return []
     
-    print_moments_table(moments)
-    
+    # Interactive selection disabled
     if max_clips and len(moments) > max_clips:
-        print(f"\nNote: Found {len(moments)} moments, but limiting to top {max_clips} by score.")
         moments = moments[:max_clips]
     
-    print(f"\nSelect moments to process (comma-separated numbers, or 'all' for all):")
-    print("Example: 1,3,5 or all")
-    
-    selection = input("Your selection: ").strip().lower()
-    
-    if selection == 'all':
-        return moments
-    
-    try:
-        indices = [int(x.strip()) - 1 for x in selection.split(',')]
-        selected = [moments[i] for i in indices if 0 <= i < len(moments)]
-        
-        if not selected:
-            print("No valid selections made. Using all moments.")
-            return moments
-        
-        return selected
-    except:
-        print("Invalid input. Using all moments.")
-        return moments
+    # Return all moments
+    return moments
 
 
 def estimate_processing_time(num_clips: int, total_duration: float) -> str:
@@ -160,7 +130,7 @@ def create_summary_report(video_metadata: Dict, moments: List[Dict],
             f.write(f"   Score: {moment['score']}/10\n")
             f.write(f"   Reason: {moment['reason']}\n")
     
-    print(f"\nSummary report saved to: {report_path}")
+    # Summary report saved
     return str(report_path)
 
 
@@ -179,11 +149,10 @@ class ProgressBar:
         bar = '█' * filled_length + '░' * (bar_length - filled_length)
         percent = progress * 100
         
-        print(f'\r{self.description}: |{bar}| {percent:.1f}% ({self.current}/{self.total})', 
-              end='', flush=True)
+        # Progress updated
         
         if self.current >= self.total:
-            print()  
+            pass  
     
     def finish(self):
         self.current = self.total

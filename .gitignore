@@ -1,7 +1,106 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+bin/
+lib/
+lib64/
+include/
+share/
+pyvenv.cfg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+
+# Application specific
+downloads/
 outputs/
 transcripts/
-downloads/
-.env
-modules/__pycache__/
+*.mp4
+*.mp3
+*.wav
+*.srt
+*.json
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.temp
+
+# Logs
+*.log
+logs/
+
+# Exclude alternative app versions (only keep main app.py)
+app_original.py
+app_improved.py
+app_multi.py
+switch_app.py
+modules/analyzer_improved.py
+modules/analyzer_original.py
+modules/analyzer_fixed.py
+modules/analyzer_fast.py
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# Testing
+test/
+tests/
+test_*.py
+*_test.py
+
+# Documentation drafts
+docs/
+*.bak
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Claude specific
 .claude/
-__pycache__/
+CLAUDE.md
+
+next_improvement.txt
+
+modules/__pycache__/

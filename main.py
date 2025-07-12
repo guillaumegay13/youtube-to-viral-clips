@@ -54,8 +54,13 @@ Examples:
                        choices=['vertical', 'horizontal'],
                        help='Output format: vertical (9:16) for social media or horizontal (16:9) (default: vertical)')
     parser.add_argument('--subtitle-style', type=str, default='Classic',
-                       choices=['Classic', 'Bold Yellow', 'Minimal', 'TikTok Style', 'Neon'],
+                       choices=['Classic', 'Bold Yellow', 'Minimal', 'TikTok Style', 'Neon', 'Ultra Bold', 'Viral Bold'],
                        help='Subtitle style template (default: Classic)')
+    parser.add_argument('--min-score', type=float, default=7.0,
+                       help='Minimum virality score (0-10) to extract clips (default: %(default)s)')
+    parser.add_argument('--provider', type=str, default='ollama',
+                       choices=['ollama', 'openai', 'anthropic'],
+                       help='AI provider for viral detection (default: %(default)s)')
     
     args = parser.parse_args()
     
@@ -95,8 +100,8 @@ Examples:
         transcript = transcriber.transcribe(video_path, force=args.force_transcribe)
         print(f"✅ Transcription complete: {len(transcript['segments'])} segments")
         
-        print(f"\n🤖 Analyzing transcript for viral moments...")
-        analyzer = ViralMomentAnalyzer()
+        print(f"\n🤖 Analyzing transcript for viral moments (provider: {args.provider})...")
+        analyzer = ViralMomentAnalyzer(provider=args.provider)
         viral_moments = analyzer.analyze_transcript(transcript)
         
         if not viral_moments:
@@ -106,7 +111,17 @@ Examples:
         
         print(f"✅ Found {len(viral_moments)} potential viral moments!")
         
-        selected_moments = select_moments(viral_moments, args.clips)
+        # Filter by minimum score
+        high_scoring_moments = [m for m in viral_moments if m['score'] >= args.min_score]
+        
+        if not high_scoring_moments:
+            print(f"\n⚠️ No moments reached the minimum score of {args.min_score}/10.")
+            print(f"Showing top {min(3, len(viral_moments))} moments instead:")
+            high_scoring_moments = viral_moments[:min(3, len(viral_moments))]
+        else:
+            print(f"✅ {len(high_scoring_moments)} moments with score ≥ {args.min_score}/10")
+        
+        selected_moments = select_moments(high_scoring_moments, args.clips)
         
         if not selected_moments:
             print("\n❌ No moments selected.")

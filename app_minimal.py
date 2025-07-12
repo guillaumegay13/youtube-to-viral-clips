@@ -244,26 +244,12 @@ st.markdown("""
         color: black !important;
     }
     
-    /* Metric label */
-    [data-testid="metric-container"] label {
+    /* Force metric text to be black */
+    div[data-testid="stMetricValue"] {
         color: black !important;
     }
     
-    /* Metric value */
-    [data-testid="metric-container"] [data-testid="metric-value"] {
-        color: black !important;
-    }
-    
-    /* Alternative metric selectors */
-    .metric-container {
-        color: black !important;
-    }
-    
-    .metric-container label {
-        color: black !important;
-    }
-    
-    .metric-container div {
+    div[data-testid="stMetricLabel"] {
         color: black !important;
     }
     
@@ -331,7 +317,6 @@ st.markdown("""
         font-size: 2.5rem !important;
         font-weight: 700 !important;
         margin-bottom: 0.5rem !important;
-        color: black !important;
     }
     
     h2 {
@@ -339,26 +324,11 @@ st.markdown("""
         font-weight: 600 !important;
         margin-top: 2rem !important;
         margin-bottom: 1rem !important;
-        color: black !important;
     }
     
     h3 {
         font-size: 1.25rem !important;
         font-weight: 600 !important;
-        color: black !important;
-    }
-    
-    h4 {
-        color: black !important;
-    }
-    
-    /* Force metric text to be black */
-    div[data-testid="stMetricValue"] {
-        color: black !important;
-    }
-    
-    div[data-testid="stMetricLabel"] {
-        color: black !important;
     }
     
     /* Caption styling */

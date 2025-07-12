@@ -87,7 +87,39 @@ TRANSLATIONS = {
         "adjusted_warning": "⚠️ Adjusted: {start} → {end}",
         "apply_adjustments": "🔄 Apply Adjustments & Re-extract Clips",
         "reextracting": "Re-extracting clips with new timings...",
-        "clips_reextracted": "✅ Clips re-extracted with adjusted timings!"
+        "clips_reextracted": "✅ Clips re-extracted with adjusted timings!",
+        "clips_ready": "✅ Clips Ready",
+        "clips_ready_desc": "Your clips are ready. Click below to add subtitles.",
+        "proceed_subtitles": "🎨 Proceed to Add Subtitles",
+        "adjust_timing": "**Adjust clip timing:**",
+        
+        # New workflow translations
+        "step_download": "Download Video",
+        "step_transcribe": "Transcribe",
+        "step_analyze": "Find Viral Moments",
+        "step_preview": "Preview & Adjust",
+        "step_export": "Export",
+        "download_video": "Download Video",
+        "start_transcription": "Start Transcription",
+        "analyze_info": "AI will analyze the transcript to find the most engaging moments",
+        "find_viral_moments": "Find Viral Moments",
+        "viral_clips_found": "Viral Clips Found",
+        "clip_selection": "Select Clips",
+        "timing_adjustment": "Adjust Timing",
+        "viral_score": "Viral Score",
+        "adjust_timing_info": "Select clips first, then adjust their timing",
+        "extract_selected_clips": "Extract Selected Clips",
+        "extracting_clips": "Extracting clips...",
+        "clips_extracted": "Clips extracted successfully!",
+        "adjust_clip_timing": "Adjust Clip Timing",
+        "proceed_to_export": "Proceed to Export",
+        "select_clips_first": "Please select clips first",
+        "export_final_clips": "Export Final Clips",
+        "processing_final_clips": "Processing final clips...",
+        "prepare_all_downloads": "Prepare All Downloads",
+        "download_individually": "Please download clips individually",
+        "download": "Download",
+        "process_new_video": "Process New Video"
     },
     
     "fr": {
@@ -162,7 +194,51 @@ TRANSLATIONS = {
         
         # Units
         "font_size": "Taille de Police : {size}px",
-        "position": "Position : {percent}% du haut"
+        "position": "Position : {percent}% du haut",
+        
+        # Preview section
+        "preview_header": "✂️ Aperçu et Ajustement des Clips",
+        "preview_info": "Prévisualisez vos clips et ajustez les temps de début/fin si nécessaire",
+        "clip_preview": "📹 Clip {num} - Score : {score}/10",
+        "start_time": "Temps de début (secondes)",
+        "end_time": "Temps de fin (secondes)",
+        "duration": "Durée",
+        "adjusted_warning": "⚠️ Ajusté : {start} → {end}",
+        "apply_adjustments": "🔄 Appliquer les Ajustements et Ré-extraire",
+        "reextracting": "Ré-extraction des clips avec les nouveaux timings...",
+        "clips_reextracted": "✅ Clips ré-extraits avec les timings ajustés !",
+        "clips_ready": "✅ Clips Prêts",
+        "clips_ready_desc": "Vos clips sont prêts. Cliquez ci-dessous pour ajouter des sous-titres.",
+        "proceed_subtitles": "🎨 Procéder à l'Ajout des Sous-titres",
+        "adjust_timing": "**Ajuster le timing du clip :**",
+        
+        # New workflow translations
+        "step_download": "Télécharger la Vidéo",
+        "step_transcribe": "Transcrire",
+        "step_analyze": "Trouver les Moments Viraux",
+        "step_preview": "Aperçu et Ajustement",
+        "step_export": "Exporter",
+        "download_video": "Télécharger la Vidéo",
+        "start_transcription": "Démarrer la Transcription",
+        "analyze_info": "L'IA analysera la transcription pour trouver les moments les plus engageants",
+        "find_viral_moments": "Trouver les Moments Viraux",
+        "viral_clips_found": "Clips Viraux Trouvés",
+        "clip_selection": "Sélectionner les Clips",
+        "timing_adjustment": "Ajuster le Timing",
+        "viral_score": "Score Viral",
+        "adjust_timing_info": "Sélectionnez d'abord les clips, puis ajustez leur timing",
+        "extract_selected_clips": "Extraire les Clips Sélectionnés",
+        "extracting_clips": "Extraction des clips...",
+        "clips_extracted": "Clips extraits avec succès !",
+        "adjust_clip_timing": "Ajuster le Timing des Clips",
+        "proceed_to_export": "Procéder à l'Export",
+        "select_clips_first": "Veuillez d'abord sélectionner des clips",
+        "export_final_clips": "Exporter les Clips Finaux",
+        "processing_final_clips": "Traitement des clips finaux...",
+        "prepare_all_downloads": "Préparer Tous les Téléchargements",
+        "download_individually": "Veuillez télécharger les clips individuellement",
+        "download": "Télécharger",
+        "process_new_video": "Traiter une Nouvelle Vidéo"
     }
 }
 
