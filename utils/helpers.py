@@ -1,5 +1,6 @@
 import os
 import sys
+import time as _time
 from pathlib import Path
 from typing import Optional, Dict, List
 import json
@@ -19,11 +20,12 @@ def format_time(seconds: float) -> str:
         return f"{minutes:02d}:{secs:02d}"
 
 
-def check_dependencies():
+def check_dependencies(provider: str = "ollama"):
     dependencies = {
         'ffmpeg': 'FFmpeg is required for video processing. Install from: https://ffmpeg.org/download.html',
-        'ollama': 'Ollama is required for LLM analysis. Install from: https://ollama.ai/'
     }
+    if provider == "ollama":
+        dependencies['ollama'] = 'Ollama is required for LLM analysis. Install from: https://ollama.ai/'
     
     missing = []
     
@@ -132,6 +134,19 @@ def create_summary_report(video_metadata: Dict, moments: List[Dict],
     
     # Summary report saved
     return str(report_path)
+
+
+def cleanup_downloads(downloads_dir: Path, max_age_hours: int = 24) -> int:
+    """Remove downloaded video files older than max_age_hours. Returns count of deleted files."""
+    if not downloads_dir.exists():
+        return 0
+    cutoff = _time.time() - (max_age_hours * 3600)
+    deleted = 0
+    for path in downloads_dir.iterdir():
+        if path.is_file() and path.stat().st_mtime < cutoff:
+            path.unlink()
+            deleted += 1
+    return deleted
 
 
 class ProgressBar:

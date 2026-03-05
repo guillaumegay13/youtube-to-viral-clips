@@ -130,6 +130,7 @@ Edit `config.py` to customize:
 Available subtitle templates:
 - Classic: White text with black outline
 - Bold Yellow: Yellow text with thick black outline
+- Submagic Yellow: Bold yellow text with smart emoji placement
 - Minimal: Small white text with thin outline
 - TikTok Style: Large white text with colored shadow
 - Neon: Cyan text with purple glow

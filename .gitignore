@@ -39,6 +39,7 @@ pyvenv.cfg
 downloads/
 outputs/
 transcripts/
+cache/
 *.mp4
 *.mp3
 *.wav
@@ -55,15 +56,6 @@ tmp/
 *.log
 logs/
 
-# Exclude alternative app versions (only keep main app.py)
-app_original.py
-app_improved.py
-app_multi.py
-switch_app.py
-modules/analyzer_improved.py
-modules/analyzer_original.py
-modules/analyzer_fixed.py
-modules/analyzer_fast.py
 
 # Jupyter
 .ipynb_checkpoints/
@@ -82,11 +74,6 @@ Desktop.ini
 # Linux
 .directory
 
-# Testing
-test/
-tests/
-test_*.py
-*_test.py
 
 # Documentation drafts
 docs/

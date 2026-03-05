@@ -54,7 +54,7 @@ Examples:
                        choices=['vertical', 'horizontal'],
                        help='Output format: vertical (9:16) for social media or horizontal (16:9) (default: vertical)')
     parser.add_argument('--subtitle-style', type=str, default='Classic',
-                       choices=['Classic', 'Bold Yellow', 'Minimal', 'TikTok Style', 'Neon', 'Ultra Bold', 'Viral Bold'],
+                       choices=['Classic', 'Bold Yellow', 'Submagic Yellow', 'Minimal', 'TikTok Style', 'Neon', 'Ultra Bold', 'Viral Bold'],
                        help='Subtitle style template (default: Classic)')
     parser.add_argument('--min-score', type=float, default=7.0,
                        help='Minimum virality score (0-10) to extract clips (default: %(default)s)')
@@ -67,7 +67,7 @@ Examples:
     print("\n🎬 YouTube Video Viral Moment Extractor")
     print("=" * 50)
     
-    if not check_dependencies():
+    if not check_dependencies(provider=args.provider):
         print("\n❌ Please install missing dependencies and try again.")
         sys.exit(1)
     

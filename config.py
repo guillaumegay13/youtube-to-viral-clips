@@ -1,28 +1,6 @@
 import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent
-DOWNLOADS_DIR = BASE_DIR / "downloads"
-OUTPUTS_DIR = BASE_DIR / "outputs"
-TRANSCRIPTS_DIR = BASE_DIR / "transcripts"
-
-for dir_path in [DOWNLOADS_DIR, OUTPUTS_DIR, TRANSCRIPTS_DIR]:
-    dir_path.mkdir(exist_ok=True)
-
-VIDEO_QUALITY = "720p"
-WHISPER_MODEL = "base"  
-
-# AI Provider Settings
-AI_PROVIDER = "ollama"  # Options: "ollama", "openai", "anthropic"
-LLM_MODEL = "llama3.2:latest"  # For Ollama
-OPENAI_MODEL = "gpt-4-turbo-preview"  # For OpenAI
-ANTHROPIC_MODEL = "claude-3-opus-20240229"  # For Anthropic
-AI_TEMPERATURE = 0.0  # Set to 0 for deterministic outputs
-
-# API Keys (set via environment variables)
-import os
-from pathlib import Path
-
 # Try to load from .env file if it exists
 try:
     from dotenv import load_dotenv
@@ -32,6 +10,25 @@ try:
 except ImportError:
     pass  # dotenv not installed
 
+BASE_DIR = Path(__file__).parent
+DOWNLOADS_DIR = BASE_DIR / "downloads"
+OUTPUTS_DIR = BASE_DIR / "outputs"
+TRANSCRIPTS_DIR = BASE_DIR / "transcripts"
+
+for dir_path in [DOWNLOADS_DIR, OUTPUTS_DIR, TRANSCRIPTS_DIR]:
+    dir_path.mkdir(exist_ok=True)
+
+VIDEO_QUALITY = "720p"
+WHISPER_MODEL = "base"
+
+# AI Provider Settings
+AI_PROVIDER = "openai"  # Options: "ollama", "openai", "anthropic"
+LLM_MODEL = "llama3.2:latest"  # For Ollama
+OPENAI_MODEL = "gpt-5-mini-2025-08-07"  # For OpenAI
+ANTHROPIC_MODEL = "claude-3-opus-20240229"  # For Anthropic
+AI_TEMPERATURE = 0.0  # Set to 0 for deterministic outputs
+
+# API Keys (set via environment variables)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
@@ -97,6 +94,29 @@ SUBTITLE_TEMPLATES = {
             "stroke_width": 7,
             "position": 0.7,
             "max_words": 2
+        }
+    },
+    "Submagic Yellow": {
+        "description": "Bold yellow captions with smart emojis",
+        "horizontal": {
+            "fontsize": 90,
+            "color": (255, 255, 0),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 7,
+            "position": 0.84,
+            "max_words": 2,
+            "smart_emojis": True,
+            "emoji_density": 0.45
+        },
+        "vertical": {
+            "fontsize": 120,
+            "color": (255, 255, 0),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 8,
+            "position": 0.72,
+            "max_words": 2,
+            "smart_emojis": True,
+            "emoji_density": 0.45
         }
     },
     "Minimal": {
@@ -216,12 +236,15 @@ AUDIO_CODEC = "aac"
 
 WHISPER_LANGUAGE = None  
 WHISPER_TASK = "transcribe"  
+WHISPER_BEAM_SIZE = 2
+WHISPER_BEST_OF = 2
+WHISPER_TEMPERATURE = (0.0, 0.2)
 
 DEFAULT_NUM_CLIPS = 5
 MIN_VIRAL_SCORE = 6.0
 
 # Analysis Settings
-CHUNK_STRATEGY = "smart"  # Options: "smart", "sliding", "semantic", "fixed"
-CHUNK_DURATION = 45  # For fixed strategy
-SLIDING_WINDOW_SIZE = 60  # For sliding strategy
+CHUNK_STRATEGY = "sliding"  # Options: "smart", "sliding", "semantic", "fixed"
+CHUNK_DURATION = 30  # For fixed strategy
+SLIDING_WINDOW_SIZE = 45  # For sliding strategy
 SLIDING_OVERLAP = 15  # For sliding strategy

@@ -1,11 +1,18 @@
 import json
-import whisper
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 import numpy as np
 from tqdm import tqdm
 
-from config import TRANSCRIPTS_DIR, WHISPER_MODEL, WHISPER_LANGUAGE, WHISPER_TASK
+from config import (
+    TRANSCRIPTS_DIR,
+    WHISPER_MODEL,
+    WHISPER_LANGUAGE,
+    WHISPER_TASK,
+    WHISPER_BEAM_SIZE,
+    WHISPER_BEST_OF,
+    WHISPER_TEMPERATURE,
+)
 
 
 class VideoTranscriber:
@@ -14,6 +21,24 @@ class VideoTranscriber:
         self.model = None
         self.transcripts_dir = TRANSCRIPTS_DIR
         self.transcripts_dir.mkdir(exist_ok=True)
+
+    def _cache_signature(self, language: Optional[str]) -> Dict[str, Any]:
+        """Return cache signature for transcript compatibility checks."""
+        return {
+            'version': 2,
+            'model': self.model_name,
+            'task': WHISPER_TASK,
+            'beam_size': WHISPER_BEAM_SIZE,
+            'best_of': WHISPER_BEST_OF,
+            'temperature': list(WHISPER_TEMPERATURE),
+            'language': language if language else "auto",
+            'word_timestamps': True,
+        }
+
+    def _is_compatible_cached_transcript(self, transcript_data: Dict, language: Optional[str]) -> bool:
+        """Check if cached transcript matches the current transcription settings."""
+        signature = transcript_data.get('transcriber', {})
+        return signature == self._cache_signature(language)
         
     def _load_model(self):
         if self.model is None:
@@ -23,20 +48,23 @@ class VideoTranscriber:
             import warnings
             import logging
             
+            # Also lower torch logging verbosity early
+            logging.getLogger("torch").setLevel(logging.ERROR)
+            
             # Temporarily suppress warnings during model loading
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore", message=".*torch.classes.*")
                 warnings.filterwarnings("ignore", message=".*Tried to instantiate class.*")
                 warnings.filterwarnings("ignore", message=".*Examining the path of torch.classes.*")
+                warnings.filterwarnings("ignore", message=".*pynvml package is deprecated.*")
                 
-                # Also suppress logging warnings
-                logging.getLogger("torch").setLevel(logging.ERROR)
-                
+                # Import whisper lazily so warning filters apply during import
+                import whisper  # noqa: WPS433 (local import intentional)
                 self.model = whisper.load_model(self.model_name)
             
             # Model loaded
     
-    def transcribe(self, video_path: str, force: bool = False, language: str = None) -> Dict[str, any]:
+    def transcribe(self, video_path: str, force: bool = False, language: str = None) -> Dict[str, Any]:
         video_path = Path(video_path)
         if not video_path.exists():
             raise FileNotFoundError(f"Video file not found: {video_path}")
@@ -44,9 +72,11 @@ class VideoTranscriber:
         transcript_path = self.transcripts_dir / f"{video_path.stem}_transcript.json"
         
         if transcript_path.exists() and not force:
-            # Load existing transcript
+            # Load existing transcript only if cache signature matches
             with open(transcript_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                cached = json.load(f)
+            if self._is_compatible_cached_transcript(cached, language):
+                return cached
         
         self._load_model()
         
@@ -64,7 +94,14 @@ class VideoTranscriber:
                 task="transcribe",  # Force transcribe, not translate
                 verbose=False,
                 word_timestamps=True,
-                fp16=False  
+                fp16=False,
+                beam_size=WHISPER_BEAM_SIZE,
+                best_of=WHISPER_BEST_OF,
+                temperature=WHISPER_TEMPERATURE,
+                condition_on_previous_text=False,
+                no_speech_threshold=0.5,
+                logprob_threshold=-1.0,
+                compression_ratio_threshold=2.4,
             )
             
             segments = []
@@ -93,7 +130,8 @@ class VideoTranscriber:
                 'language': result.get('language', 'unknown'),
                 'duration': segments[-1]['end'] if segments else 0,
                 'segments': segments,
-                'full_text': result['text'].strip()
+                'full_text': result['text'].strip(),
+                'transcriber': self._cache_signature(language),
             }
             
             with open(transcript_path, 'w', encoding='utf-8') as f:

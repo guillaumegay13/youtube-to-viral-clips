@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viral Clips Extractor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAFAF8;
+      --surface: #FFFFFF;
+      --text: #1A1A1A;
+      --text-secondary: #8A8A86;
+      --border: #E8E5E0;
+      --accent: #1A1A1A;
+      --accent-hover: #3A3A3A;
+      --success: #2D7D5F;
+      --focus: #C4A882;
+      --error: #B44A3F;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+    }
+
+    /* ----- Header ----- */
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    header h1 {
+      font-family: 'Instrument Serif', serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 3rem;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      font-weight: 400;
+    }
+
+    /* ----- Form ----- */
+    .form-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-label {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+      margin-bottom: 1.25rem;
+    }
+
+    .source-tabs {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .source-tab {
+      flex: 1;
+      padding: 0.625rem 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--bg);
+      border: none;
+      color: var(--text-secondary);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .source-tab:not(:last-child) {
+      border-right: 1px solid var(--border);
+    }
+
+    .source-tab.active {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.375rem;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 0.7rem 0.875rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px rgba(196, 168, 130, 0.25);
+    }
+
+    input[type="text"]::placeholder {
+      color: #C0BFBA;
+    }
+
+    .field-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /* ----- Advanced toggle ----- */
+    .advanced-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .advanced-toggle:hover {
+      color: var(--text);
+    }
+
+    .advanced-toggle svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.25s;
+    }
+
+    .advanced-toggle.open svg {
+      transform: rotate(90deg);
+    }
+
+    .advanced-options {
+      display: none;
+    }
+
+    .advanced-options.show {
+      display: block;
+    }
+
+    /* ----- Checkbox ----- */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .checkbox-row label {
+      margin-bottom: 0;
+      font-size: 0.9rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    /* ----- Button ----- */
+    .btn-primary {
+      display: block;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ----- Local file selector ----- */
+    .local-panel {
+      display: none;
+    }
+
+    .local-panel.show {
+      display: block;
+    }
+
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 1rem;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--focus);
+      background: rgba(196, 168, 130, 0.04);
+    }
+
+    .upload-zone p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .upload-zone .upload-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    .upload-zone input[type="file"] {
+      display: none;
+    }
+
+    .upload-filename {
+      font-size: 0.85rem;
+      color: var(--success);
+      margin-top: 0.5rem;
+    }
+
+    /* ----- Progress ----- */
+    #progress-section {
+      display: none;
+      margin-bottom: 2rem;
+    }
+
+    .progress-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .progress-dot.active {
+      background: var(--accent);
+    }
+
+    .progress-dot.done {
+      background: var(--success);
+    }
+
+    .progress-message {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-step-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .download-bar-wrapper {
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .download-bar-wrapper.show {
+      display: block;
+    }
+
+    .download-bar-track {
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .download-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .download-bar-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 0.375rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ----- Results ----- */
+    #results-section {
+      display: none;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.5rem;
+    }
+
+    .results-header h2 {
+      font-family: 'Instrument Serif', serif;
+      font-weight: 400;
+      font-size: 1.75rem;
+    }
+
+    .results-header .video-title {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      max-width: 50%;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .clips-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .clip-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: box-shadow 0.2s;
+    }
+
+    .clip-card:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .clip-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .clip-number {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.15rem;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Instrument Serif', serif;
+      font-size: 0.9rem;
+      padding: 0.2rem 0.75rem;
+      border-radius: 999px;
+    }
+
+    .clip-meta {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .clip-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .clip-reason {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .clip-description {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.5;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .clip-description:hover {
+      border-color: var(--focus);
+    }
+
+    .clip-description .copy-hint {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.375rem;
+    }
+
+    .clip-description.copied {
+      border-color: var(--success);
+    }
+
+    .clip-description.copied .copy-hint {
+      color: var(--success);
+    }
+
+    .clip-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .restyle-select {
+      padding: 0.5rem 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .restyle-select:focus {
+      border-color: var(--focus);
+    }
+
+    .restyle-select:disabled {
+      opacity: 0.5;
+      cursor: wait;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.25rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .btn-download:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .btn-download svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ----- Reset / Again ----- */
+    .reset-row {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .btn-reset {
+      padding: 0.65rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--text-secondary);
+      color: var(--text);
+    }
+
+    /* ----- Error ----- */
+    .error-banner {
+      display: none;
+      background: #FEF2F1;
+      color: var(--error);
+      border: 1px solid #F0CECA;
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ----- Responsive ----- */
+    @media (max-width: 600px) {
+      main {
+        padding: 2rem 1rem 3rem;
+      }
+
+      header h1 {
+        font-size: 2.25rem;
+      }
+
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .results-header {
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .results-header .video-title {
+        max-width: 100%;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- Header -->
+    <header>
+      <h1>Viral Clips Extractor</h1>
+      <p>Extract the most engaging moments from videos using AI</p>
+    </header>
+
+    <!-- Error Banner -->
+    <div id="error-banner" class="error-banner"></div>
+
+    <!-- Form Section -->
+    <div id="form-section">
+      <div class="form-section">
+        <div class="section-label">Video Source</div>
+
+        <!-- Source tabs -->
+        <div class="source-tabs">
+          <button class="source-tab active" data-source="youtube" type="button">YouTube URL</button>
+          <button class="source-tab" data-source="local" type="button">Local File</button>
+        </div>
+
+        <!-- YouTube panel -->
+        <div id="youtube-panel">
+          <div class="field-group">
+            <label for="url-input">YouTube URL</label>
+            <input type="text" id="url-input" placeholder="https://www.youtube.com/watch?v=...">
+          </div>
+          <div class="field-group">
+            <label for="quality-select">Video Quality</label>
+            <select id="quality-select">
+              <option value="best" selected>Best available</option>
+              <option value="1080p">1080p</option>
+              <option value="720p">720p</option>
+              <option value="480p">480p</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Local file panel -->
+        <div id="local-panel" class="local-panel">
+          <div class="field-group">
+            <label for="local-select">Select from downloads</label>
+            <select id="local-select">
+              <option value="">Loading...</option>
+            </select>
+          </div>
+          <div style="text-align:center;color:var(--text-secondary);font-size:0.85rem;margin:0.75rem 0;">or</div>
+          <div class="upload-zone" id="upload-zone">
+            <div class="upload-icon">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4 4 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 16v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <p>Drop a video file or click to browse</p>
+            <div class="upload-filename" id="upload-filename"></div>
+            <input type="file" id="file-input" accept=".mp4,.webm,.mkv">
+          </div>
+        </div>
+      </div>
+
+      <!-- Options -->
+      <div class="form-section">
+        <div class="advanced-toggle" id="advanced-toggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          Processing options
+        </div>
+
+        <div class="advanced-options" id="advanced-options">
+          <div class="field-row" style="margin-bottom:1rem;">
+            <div class="field-group">
+              <label for="provider-select">AI Provider</label>
+              <select id="provider-select">
+                <option value="ollama">Ollama (local)</option>
+                <option value="openai" selected>OpenAI</option>
+                <option value="anthropic">Anthropic</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="score-select">Min. Virality Score</label>
+              <select id="score-select">
+                <option value="5">5.0</option>
+                <option value="6">6.0</option>
+                <option value="6.5">6.5</option>
+                <option value="7" selected>7.0</option>
+                <option value="7.5">7.5</option>
+                <option value="8">8.0</option>
+                <option value="9">9.0</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="vertical-check" checked>
+            <label for="vertical-check">Vertical format (9:16)</label>
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="subtitles-check" checked>
+            <label for="subtitles-check">Add subtitles</label>
+          </div>
+
+          <div class="field-group" id="subtitle-style-group" style="margin-top:0.75rem;">
+            <label for="style-select">Subtitle Style</label>
+            <select id="style-select">
+              <option value="Submagic Yellow" selected>Submagic Yellow</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button class="btn-primary" id="submit-btn">Extract Viral Clips</button>
+    </div>
+
+    <!-- Progress Section -->
+    <div id="progress-section">
+      <div class="progress-card">
+        <div class="spinner"></div>
+        <div class="progress-steps">
+          <div class="progress-dot" id="dot-1"></div>
+          <div class="progress-dot" id="dot-2"></div>
+          <div class="progress-dot" id="dot-3"></div>
+          <div class="progress-dot" id="dot-4"></div>
+          <div class="progress-dot" id="dot-5"></div>
+        </div>
+        <div class="progress-message" id="progress-message">Starting...</div>
+        <div class="progress-step-label" id="progress-step-label">Step 1 of 5</div>
+        <div class="download-bar-wrapper" id="download-bar">
+          <div class="download-bar-track">
+            <div class="download-bar-fill" id="download-bar-fill"></div>
+          </div>
+          <div class="download-bar-label" id="download-bar-label"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results-section">
+      <div class="results-header">
+        <h2>Your Clips</h2>
+        <div class="video-title" id="result-video-title"></div>
+      </div>
+      <div class="clips-grid" id="clips-grid"></div>
+      <div class="reset-row">
+        <button class="btn-reset" id="reset-btn">Process Another Video</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ---- State ----
+    let state = 'idle'; // idle | processing | done
+    let currentSource = 'youtube';
+    let uploadedFilename = null;
+    let currentSessionId = null;
+    let loadedStyles = {};
+
+    // ---- DOM refs ----
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+
+    const formSection    = $('#form-section');
+    const progressSec    = $('#progress-section');
+    const resultsSec     = $('#results-section');
+    const errorBanner    = $('#error-banner');
+    const submitBtn      = $('#submit-btn');
+    const resetBtn       = $('#reset-btn');
+
+    // ---- Source tabs ----
+    $$('.source-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        $$('.source-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentSource = tab.dataset.source;
+        $('#youtube-panel').style.display = currentSource === 'youtube' ? 'block' : 'none';
+        $('#local-panel').classList.toggle('show', currentSource === 'local');
+        if (currentSource === 'local') loadDownloads();
+      });
+    });
+
+    // ---- Advanced toggle ----
+    $('#advanced-toggle').addEventListener('click', () => {
+      const toggle = $('#advanced-toggle');
+      const opts = $('#advanced-options');
+      toggle.classList.toggle('open');
+      opts.classList.toggle('show');
+    });
+
+    // ---- Subtitles checkbox -> show/hide style ----
+    $('#subtitles-check').addEventListener('change', (e) => {
+      $('#subtitle-style-group').style.display = e.target.checked ? 'block' : 'none';
+    });
+
+    // ---- Upload zone ----
+    const uploadZone = $('#upload-zone');
+    const fileInput = $('#file-input');
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.style.borderColor = 'var(--focus)'; });
+    uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = ''; });
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '';
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        handleFileSelect(e.dataTransfer.files[0]);
+      }
+    });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) handleFileSelect(fileInput.files[0]);
+    });
+
+    async function handleFileSelect(file) {
+      $('#upload-filename').textContent = `Uploading ${file.name}...`;
+      const fd = new FormData();
+      fd.append('file', file);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        uploadedFilename = data.filename;
+        $('#upload-filename').textContent = `Ready: ${data.filename}`;
+      } catch (err) {
+        showError(err.message);
+        $('#upload-filename').textContent = '';
+      }
+    }
+
+    // ---- Load subtitle styles ----
+    async function loadStyles() {
+      try {
+        const res = await fetch('/api/subtitle-styles');
+        const styles = await res.json();
+        loadedStyles = styles;
+        const sel = $('#style-select');
+        sel.innerHTML = '';
+        for (const [name, desc] of Object.entries(styles)) {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = `${name} — ${desc}`;
+          if (name === 'Submagic Yellow') opt.selected = true;
+          sel.appendChild(opt);
+        }
+      } catch (_) {}
+    }
+
+    // ---- Load downloads list ----
+    async function loadDownloads() {
+      try {
+        const res = await fetch('/api/downloads');
+        const files = await res.json();
+        const sel = $('#local-select');
+        sel.innerHTML = '';
+        if (files.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = 'No video files in /downloads';
+          sel.appendChild(opt);
+        } else {
+          files.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f;
+            sel.appendChild(opt);
+          });
+        }
+      } catch (_) {}
+    }
+
+    // ---- Submit ----
+    submitBtn.addEventListener('click', () => {
+      if (state === 'processing') return;
+      hideError();
+
+      const payload = {
+        source: currentSource,
+        url: currentSource === 'youtube' ? $('#url-input').value.trim() : '',
+        local_file: '',
+        quality: $('#quality-select').value,
+        provider: $('#provider-select').value,
+        min_score: parseFloat($('#score-select').value),
+        vertical_format: $('#vertical-check').checked,
+        add_subtitles: $('#subtitles-check').checked,
+        subtitle_style: $('#style-select').value,
+      };
+
+      if (currentSource === 'youtube' && !payload.url) {
+        showError('Please enter a YouTube URL.');
+        return;
+      }
+
+      if (currentSource === 'local') {
+        if (uploadedFilename) {
+          payload.local_file = uploadedFilename;
+        } else {
+          const localVal = $('#local-select').value;
+          if (!localVal) {
+            showError('Please select or upload a video file.');
+            return;
+          }
+          payload.local_file = localVal;
+        }
+      }
+
+      startProcessing(payload);
+    });
+
+    // ---- Processing via SSE ----
+    function startProcessing(payload) {
+      state = 'processing';
+      formSection.style.display = 'none';
+      progressSec.style.display = 'block';
+      resultsSec.style.display = 'none';
+      submitBtn.disabled = true;
+
+      // Reset dots
+      for (let i = 1; i <= 5; i++) {
+        $(`#dot-${i}`).className = 'progress-dot';
+      }
+      $('#progress-message').textContent = 'Starting...';
+      $('#progress-step-label').textContent = '';
+      $('#download-bar').classList.remove('show');
+      $('#download-bar-fill').style.width = '0%';
+
+      // Use fetch + ReadableStream for SSE since we need to POST
+      fetch('/api/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).then(response => {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        function read() {
+          reader.read().then(({ done, value }) => {
+            if (done) {
+              // If we're still in processing state, something went wrong
+              if (state === 'processing') {
+                showError('Connection closed unexpectedly.');
+                resetToForm();
+              }
+              return;
+            }
+            buffer += decoder.decode(value, { stream: true });
+            // Parse SSE events from buffer
+            const parts = buffer.split('\n\n');
+            buffer = parts.pop(); // keep incomplete part
+            for (const part of parts) {
+              const lines = part.split('\n');
+              let event = 'message';
+              let data = '';
+              for (const line of lines) {
+                if (line.startsWith('event: ')) event = line.slice(7);
+                if (line.startsWith('data: ')) data = line.slice(6);
+              }
+              if (data) handleSSE(event, JSON.parse(data));
+            }
+            read();
+          }).catch(err => {
+            if (state === 'processing') {
+              showError('Connection error: ' + err.message);
+              resetToForm();
+            }
+          });
+        }
+        read();
+      }).catch(err => {
+        showError('Request failed: ' + err.message);
+        resetToForm();
+      });
+    }
+
+    function handleSSE(event, data) {
+      if (event === 'progress') {
+        const { step, total, message } = data;
+        // Hide download bar when we move past step 1
+        if (step > 1) {
+          $('#download-bar').classList.remove('show');
+        }
+        // Update dots
+        for (let i = 1; i <= total; i++) {
+          const dot = $(`#dot-${i}`);
+          if (i < step) dot.className = 'progress-dot done';
+          else if (i === step) dot.className = 'progress-dot active';
+          else dot.className = 'progress-dot';
+        }
+        $('#progress-message').textContent = message;
+        $('#progress-step-label').textContent = `Step ${step} of ${total}`;
+      } else if (event === 'download_progress') {
+        const { percent, downloaded, total } = data;
+        const bar = $('#download-bar');
+        bar.classList.add('show');
+        $('#download-bar-fill').style.width = percent + '%';
+        if (total > 0) {
+          const dlMB = (downloaded / 1048576).toFixed(1);
+          const totalMB = (total / 1048576).toFixed(1);
+          $('#download-bar-label').textContent = `${dlMB} MB / ${totalMB} MB (${percent}%)`;
+        } else {
+          const dlMB = (downloaded / 1048576).toFixed(1);
+          $('#download-bar-label').textContent = `${dlMB} MB downloaded`;
+        }
+      } else if (event === 'done') {
+        state = 'done';
+        currentSessionId = data.session_id || null;
+        progressSec.style.display = 'none';
+        showResults(data);
+      } else if (event === 'error') {
+        showError(data.message);
+        resetToForm();
+      }
+    }
+
+    // ---- Results ----
+    function showResults(data) {
+      resultsSec.style.display = 'block';
+      $('#result-video-title').textContent = data.title || '';
+
+      const grid = $('#clips-grid');
+      grid.innerHTML = '';
+
+      data.clips.forEach((clip, i) => {
+        const startStr = formatTime(clip.start);
+        const endStr = formatTime(clip.end);
+        const card = document.createElement('div');
+        card.className = 'clip-card';
+        card.innerHTML = `
+          <div class="clip-card-top">
+            <div class="clip-number">Clip ${i + 1}</div>
+            <div class="score-pill">${clip.score.toFixed(1)}</div>
+          </div>
+          ${clip.title ? `<div class="clip-title">${escapeHtml(clip.title)}</div>` : ''}
+          <div class="clip-meta">
+            <span>${clip.duration.toFixed(1)}s</span>
+            <span>${startStr} &mdash; ${endStr}</span>
+          </div>
+          ${clip.reason ? `<div class="clip-reason">${escapeHtml(clip.reason)}</div>` : ''}
+          ${clip.description ? `<div class="clip-description" onclick="copyText(this, '${escapeAttr(clip.description)}')">
+            ${escapeHtml(clip.description)}
+            <span class="copy-hint">Click to copy</span>
+          </div>` : ''}
+          <div class="clip-actions">
+            <a class="btn-download" id="dl-clip-${i}" href="/api/clips/${encodeURIComponent(clip.filename)}" download>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0-4-4m4 4 4-4"/><path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/></svg>
+              Download
+            </a>
+            <select class="restyle-select" id="restyle-${i}" onchange="restyleClip(${i}, this)">
+              <option value="" disabled selected>Change style...</option>
+              ${Object.entries(loadedStyles).map(([name, desc]) =>
+                `<option value="${escapeAttr(name)}">${escapeHtml(name)}</option>`
+              ).join('')}
+            </select>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // ---- Reset ----
+    resetBtn.addEventListener('click', () => {
+      resetToForm();
+    });
+
+    function resetToForm() {
+      state = 'idle';
+      currentSessionId = null;
+      formSection.style.display = 'block';
+      progressSec.style.display = 'none';
+      resultsSec.style.display = 'none';
+      submitBtn.disabled = false;
+      uploadedFilename = null;
+      $('#upload-filename').textContent = '';
+    }
+
+    // ---- Helpers ----
+    function showError(msg) {
+      errorBanner.textContent = msg;
+      errorBanner.style.display = 'block';
+    }
+
+    function hideError() {
+      errorBanner.style.display = 'none';
+    }
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return `${m}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function escapeAttr(str) {
+      return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
+    }
+
+    async function restyleClip(clipIndex, selectEl) {
+      if (!currentSessionId) return;
+      const style = selectEl.value;
+      if (!style) return;
+      selectEl.disabled = true;
+      const prevText = selectEl.options[selectEl.selectedIndex].text;
+      selectEl.options[selectEl.selectedIndex].text = 'Restyling...';
+      try {
+        const res = await fetch('/api/restyle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: currentSessionId, clip_index: clipIndex, style }),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        const dlLink = $(`#dl-clip-${clipIndex}`);
+        if (dlLink) dlLink.href = `/api/clips/${encodeURIComponent(data.filename)}`;
+      } catch (err) {
+        showError('Restyle failed: ' + err.message);
+      } finally {
+        selectEl.disabled = false;
+        selectEl.options[selectEl.selectedIndex].text = prevText;
+        selectEl.value = '';
+      }
+    }
+
+    function copyText(el, text) {
+      const decoded = text.replace(/\\n/g, '\n').replace(/\\'/g, "'").replace(/\\\\/g, '\\');
+      navigator.clipboard.writeText(decoded).then(() => {
+        el.classList.add('copied');
+        const hint = el.querySelector('.copy-hint');
+        if (hint) hint.textContent = 'Copied!';
+        setTimeout(() => {
+          el.classList.remove('copied');
+          if (hint) hint.textContent = 'Click to copy';
+        }, 2000);
+      });
+    }
+
+    // ---- Init ----
+    loadStyles();
+  </script>
+</body>
+</html>

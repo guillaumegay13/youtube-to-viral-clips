@@ -1,4 +1,5 @@
 import ffmpeg
+from fractions import Fraction
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 import os
@@ -156,7 +157,7 @@ class VideoProcessor:
                     'width': int(video_stream['width']),
                     'height': int(video_stream['height']),
                     'video_codec': video_stream['codec_name'],
-                    'fps': eval(video_stream['r_frame_rate'])
+                    'fps': float(Fraction(video_stream['r_frame_rate']))
                 })
             
             if audio_stream:
