@@ -7,6 +7,7 @@ import re
 
 from config import SUBTITLE_STYLE, VERTICAL_SUBTITLE_STYLE, OUTPUTS_DIR, SUBTITLE_TEMPLATES
 from modules.transcriber import VideoTranscriber
+from utils.video_metadata import get_video_info
 
 
 class SubtitleGenerator:
@@ -50,12 +51,11 @@ class SubtitleGenerator:
         output_path = self.output_dir / output_filename
 
         try:
-            # Get video info
-            probe = ffmpeg.probe(str(video_path))
-            video_stream = next(s for s in probe['streams'] if s['codec_type'] == 'video')
-            duration = float(video_stream['duration'])
-            video_width = int(video_stream.get('width', 1080))
-            video_height = int(video_stream.get('height', 1920))
+            # Reuse cached probe metadata so each clip render does not reprobe the file.
+            video_info = get_video_info(str(video_path))
+            duration = float(video_info.get('duration', 0.0))
+            video_width = int(video_info.get('width', 1080))
+            video_height = int(video_info.get('height', 1920))
             
             # Get subtitle style from template
             if style_template in SUBTITLE_TEMPLATES:

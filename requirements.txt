@@ -1,5 +1,6 @@
 flask>=3.0.0
 yt-dlp>=2023.10.13
+faster-whisper>=1.1.0
 openai-whisper>=20231117
 opencv-python>=4.8.0
 numpy>=1.24.0

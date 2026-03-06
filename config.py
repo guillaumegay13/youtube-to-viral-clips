@@ -20,6 +20,10 @@ for dir_path in [DOWNLOADS_DIR, OUTPUTS_DIR, TRANSCRIPTS_DIR]:
 
 VIDEO_QUALITY = "720p"
 WHISPER_MODEL = "base"
+WHISPER_BACKEND = "faster-whisper"  # Options: "faster-whisper", "openai-whisper"
+WHISPER_DEVICE = "cpu"  # Set to "cuda" on GPU VPS instances
+WHISPER_COMPUTE_TYPE = "int8"  # Good CPU default for faster-whisper
+WHISPER_VAD_FILTER = False  # Keep timestamps stable for clipping by default
 
 # AI Provider Settings
 AI_PROVIDER = "openai"  # Options: "ollama", "openai", "anthropic"
@@ -248,3 +252,10 @@ CHUNK_STRATEGY = "sliding"  # Options: "smart", "sliding", "semantic", "fixed"
 CHUNK_DURATION = 30  # For fixed strategy
 SLIDING_WINDOW_SIZE = 45  # For sliding strategy
 SLIDING_OVERLAP = 15  # For sliding strategy
+ANALYSIS_PREFILTER_ENABLED = True
+ANALYSIS_CANDIDATE_RATIO = 0.45
+ANALYSIS_MIN_CANDIDATES = 24
+ANALYSIS_EXPANSION_BATCH = 12
+ANALYSIS_TARGET_MOMENTS = 5
+
+VIDEO_INFO_CACHE_SIZE = 128

@@ -1,10 +1,9 @@
 import ffmpeg
-from fractions import Fraction
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
-import os
+from typing import List, Dict, Optional
 
 from config import OUTPUTS_DIR, VIDEO_CODEC, AUDIO_CODEC, CLIP_BUFFER_SECONDS
+from utils.video_metadata import get_video_info as load_video_info
 
 
 class VideoProcessor:
@@ -33,11 +32,10 @@ class VideoProcessor:
             input_stream = ffmpeg.input(str(video_path), ss=start_time, t=duration)
             
             if vertical_format:
-                # Get video info to calculate crop
-                probe = ffmpeg.probe(str(video_path))
-                video_stream = next(s for s in probe['streams'] if s['codec_type'] == 'video')
-                width = int(video_stream['width'])
-                height = int(video_stream['height'])
+                # Probe once per source file and reuse cached metadata across clips.
+                video_info = load_video_info(str(video_path))
+                width = int(video_info['width'])
+                height = int(video_info['height'])
                 
                 # Calculate 9:16 crop (vertical format for social media)
                 target_aspect = 9 / 16
@@ -135,40 +133,7 @@ class VideoProcessor:
     
     def get_video_info(self, video_path: str) -> Dict:
         try:
-            probe = ffmpeg.probe(video_path)
-            video_stream = next(
-                (stream for stream in probe['streams'] if stream['codec_type'] == 'video'), 
-                None
-            )
-            audio_stream = next(
-                (stream for stream in probe['streams'] if stream['codec_type'] == 'audio'), 
-                None
-            )
-            
-            info = {
-                'duration': float(probe['format']['duration']),
-                'size': int(probe['format']['size']),
-                'bit_rate': int(probe['format']['bit_rate']),
-                'format': probe['format']['format_name']
-            }
-            
-            if video_stream:
-                info.update({
-                    'width': int(video_stream['width']),
-                    'height': int(video_stream['height']),
-                    'video_codec': video_stream['codec_name'],
-                    'fps': float(Fraction(video_stream['r_frame_rate']))
-                })
-            
-            if audio_stream:
-                info.update({
-                    'audio_codec': audio_stream['codec_name'],
-                    'audio_sample_rate': int(audio_stream['sample_rate']),
-                    'audio_channels': int(audio_stream['channels'])
-                })
-            
-            return info
-            
+            return load_video_info(video_path)
         except Exception as e:
             raise Exception(f"Error getting video info: {str(e)}")
     
