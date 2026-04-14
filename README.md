@@ -26,7 +26,7 @@ This tool downloads YouTube videos, transcribes them using OpenAI Whisper, analy
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/youtube-to-viral-clips.git
+git clone https://github.com/guillaumegay13/youtube-to-viral-clips.git
 cd youtube-to-viral-clips
 ```
 
@@ -76,12 +76,11 @@ export ANTHROPIC_API_KEY="your-api-key"
 
 ### Web Interface
 
-Run the Streamlit app:
 ```bash
-streamlit run app.py
+python app.py
 ```
 
-Then open http://localhost:8501 in your browser.
+Then open http://localhost:5000 in your browser.
 
 ### Command Line
 
