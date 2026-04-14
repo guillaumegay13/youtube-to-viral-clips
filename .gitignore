@@ -29,7 +29,6 @@ pyvenv.cfg
 *.swp
 *.swo
 *~
-.DS_Store
 
 # Environment variables
 .env
@@ -89,5 +88,3 @@ docs/
 CLAUDE.md
 
 next_improvement.txt
-
-modules/__pycache__/
