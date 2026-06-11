@@ -19,7 +19,7 @@ from utils.helpers import (
     format_time,
     ProgressBar
 )
-from config import VIDEO_QUALITY, DEFAULT_NUM_CLIPS
+from config import VIDEO_QUALITY, DEFAULT_NUM_CLIPS, SUBTITLE_TEMPLATES
 
 
 def main():
@@ -53,8 +53,13 @@ Examples:
     parser.add_argument('--format', type=str, default='vertical',
                        choices=['vertical', 'horizontal'],
                        help='Output format: vertical (9:16) for social media or horizontal (16:9) (default: vertical)')
+    parser.add_argument('--layout', type=str, default='center-crop',
+                       choices=['center-crop', 'split-stack'],
+                       help='Vertical layout: center-crop keeps the middle of the frame, '
+                            'split-stack stacks two side-by-side speakers vertically '
+                            '(for two-person podcast framing) (default: center-crop)')
     parser.add_argument('--subtitle-style', type=str, default='Classic',
-                       choices=['Classic', 'Bold Yellow', 'Submagic Yellow', 'Minimal', 'TikTok Style', 'Neon', 'Ultra Bold', 'Viral Bold'],
+                       choices=list(SUBTITLE_TEMPLATES.keys()),
                        help='Subtitle style template (default: Classic)')
     parser.add_argument('--min-score', type=float, default=7.0,
                        help='Minimum virality score (0-10) to extract clips (default: %(default)s)')
@@ -144,7 +149,8 @@ Examples:
                     moment['start'],
                     moment['end'],
                     output_name,
-                    vertical_format=(args.format == 'vertical')
+                    vertical_format=(args.format == 'vertical'),
+                    layout=args.layout
                 )
                 clip_paths.append(clip_path)
                 
