@@ -1,0 +1,27 @@
+tests/test_split_stack_layout.py
+  s_83f527a4adcc23::t_cd4abc7973d7b2 1-64
+main.py
+  s_83f527a4adcc23::t_caf89469d39e47 22
+  s_83f527a4adcc23::t_a735e9ceed7950 56-60,62
+  s_83f527a4adcc23::t_5768a016883462 152-153
+modules/video_processor.py
+  s_83f527a4adcc23::t_7b5ab52a936c5e 160
+  s_83f527a4adcc23::t_84a335387d036c 8-47
+  s_83f527a4adcc23::t_b8844c496fe71e 54-59,63,65,70,72,75,77,83,85-124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "11daeb8164debd089c3c233ac3e3c318462c0d16",
+  "prompts": {},
+  "sessions": {
+    "s_83f527a4adcc23": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f43351c9-3106-4116-b9e0-fc155a2a37ba",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Guillaume Gay <guillaume.gay@protonmail.com>"
+    }
+  }
+}
