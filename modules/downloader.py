@@ -53,12 +53,11 @@ class YouTubeDownloader:
             'extract_flat': False,
             'ignoreerrors': False,
             'no_playlist': True,
-            # Use alternative clients to avoid YouTube 403 errors
-            'extractor_args': {
-                'youtube': {
-                    'player_client': ['ios,mweb'],
-                },
-            },
+            # YouTube now requires solving JS challenges during extraction.
+            # Allow any installed runtime and fetch the solver script on demand
+            # (CLI equivalent: --js-runtimes node --remote-components ejs:github).
+            'js_runtimes': {'deno': {'path': None}, 'node': {'path': None}},
+            'remote_components': ['ejs:github'],
         }
 
         if progress_callback:

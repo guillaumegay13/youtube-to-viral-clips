@@ -1,5 +1,6 @@
 flask>=3.0.0
-yt-dlp>=2023.10.13
+# 2026.6.9+ needed for js_runtimes/remote_components (YouTube JS challenges)
+yt-dlp>=2026.6.9
 faster-whisper>=1.1.0
 openai-whisper>=20231117
 opencv-python>=4.8.0
