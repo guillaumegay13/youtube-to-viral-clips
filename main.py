@@ -201,7 +201,10 @@ Examples:
                         output_name,
                         vertical_format=(args.format == 'vertical'),
                         clip_start_time=metadata['start_time'],
-                        style_template=args.subtitle_style
+                        style_template=args.subtitle_style,
+                        # Captions sit on the seam between the two stacked
+                        # speaker panels instead of over the bottom face
+                        position_override=0.5 if args.layout == 'split-stack' else None
                     )
                     final_clips.append(subtitled_path)
                     progress.update()

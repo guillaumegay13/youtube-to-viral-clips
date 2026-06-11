@@ -37,7 +37,7 @@ class SubtitleGenerator:
                      start_time: float, end_time: float,
                      output_name: Optional[str] = None, vertical_format: bool = True,
                      clip_start_time: Optional[float] = None, style_template: str = "Classic",
-                     language: str = "en") -> str:
+                     language: str = "en", position_override: Optional[float] = None) -> str:
         """Fast subtitle generation using FFmpeg subtitles filter"""
         video_path = Path(video_path)
         if not video_path.exists():
@@ -72,6 +72,10 @@ class SubtitleGenerator:
                     'position': style['position'][1] if isinstance(style['position'], tuple) else style['position']
                 }
             
+            if position_override is not None:
+                # e.g. 0.5 centers captions on the seam between split-stack panels
+                style_settings = {**style_settings, 'position': position_override}
+
             # If clip_start_time is provided, use it as the offset
             if clip_start_time is not None:
                 video_offset = clip_start_time
