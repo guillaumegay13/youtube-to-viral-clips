@@ -13,7 +13,9 @@ This tool downloads YouTube videos, transcribes them using OpenAI Whisper, analy
 - Parallel clip extraction for faster processing
 - Multiple AI providers: Ollama (local), OpenAI, Anthropic
 - Customizable subtitle styles optimized for social media
+- Karaoke word highlighting: the actively spoken word pops in color ("Viral Highlight" style)
 - Vertical format option for TikTok/Reels/Shorts
+- Split-stack layout for two-person podcasts: side-by-side speakers are stacked vertically
 - Clean, minimal web interface
 
 ## Requirements
@@ -124,6 +126,19 @@ Edit `config.py` to customize:
 - `MAX_CLIP_LENGTH`: Maximum clip duration in seconds
 - `WHISPER_MODEL`: Whisper model size ("base", "small", "medium", "large")
 
+## Podcast Mode (Split-Stack Layout)
+
+For two-person podcasts filmed with both speakers side by side (16:9), use the
+`split-stack` layout to convert to shorts: each speaker's half of the frame is
+cropped and the two are stacked vertically into the 9:16 canvas.
+
+```bash
+python main.py --file "episode.mp4" --layout split-stack --subtitle-style "Viral Highlight"
+```
+
+The default `center-crop` layout keeps the middle of the frame and is right for
+single-speaker videos.
+
 ## Subtitle Styles
 
 Available subtitle templates:
@@ -135,6 +150,7 @@ Available subtitle templates:
 - Neon: Cyan text with purple glow
 - Ultra Bold: Extra thick white text
 - Viral Bold: Massive white text for maximum impact
+- Viral Highlight: Karaoke-style word-by-word highlight — the spoken word pops in yellow
 
 ## Output
 

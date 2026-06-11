@@ -35,8 +35,8 @@ YouTube URL → Download → Transcribe → Analyze → Extract Clips → Add Su
 | `downloader.py` | `YouTubeDownloader` | Downloads via yt-dlp. Returns `{filepath, title, duration}` |
 | `transcriber.py` | `VideoTranscriber` | Whisper transcription with word-level timestamps |
 | `analyzer.py` | `ViralMomentAnalyzer` | LLM scores transcript chunks for viral potential (0-10) |
-| `video_processor.py` | `VideoProcessor` | FFmpeg clip extraction, horizontal/vertical formats |
-| `subtitle_generator.py` | `SubtitleGenerator` | Word-by-word animated subtitles with style templates |
+| `video_processor.py` | `VideoProcessor` | FFmpeg clip extraction, horizontal/vertical formats, vertical layouts (`center-crop`, `split-stack`) |
+| `subtitle_generator.py` | `SubtitleGenerator` | Word-by-word animated subtitles with style templates; karaoke active-word highlight when a template defines `highlight_color` |
 
 ### Entry Points
 
@@ -75,10 +75,12 @@ YouTube URL → Download → Transcribe → Analyze → Extract Clips → Add Su
 ## Conventions
 
 - **Output format:** Vertical 9:16 by default (TikTok/Reels/Shorts)
+- **Vertical layouts:** `center-crop` (default, single speaker) or `split-stack` (two side-by-side speakers cropped and stacked vertically — use for two-person podcast sources). CLI: `--layout split-stack`
+- **Viral subtitles:** the "Viral Highlight" template renders karaoke-style captions where the actively spoken word is colored and scaled. Any template gains this by defining `highlight_color` (and optional `highlight_scale`) in `config.py`
 - **Working directories:** `downloads/`, `outputs/`, `transcripts/` — auto-created, gitignored
 - **API keys:** Via `.env` file or environment variables (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`)
 - **Frontend:** Single-file HTML/CSS/JS in `templates/index.html`
-- **No test framework configured** — tests exist in `tests/` but are standalone scripts
+- **Tests:** pytest suite in `tests/` — run `python -m pytest tests/ -q`
 
 ## Programmatic Usage
 
