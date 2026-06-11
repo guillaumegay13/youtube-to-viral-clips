@@ -1,0 +1,22 @@
+main.py
+  s_83f527a4adcc23::t_597d7b18a60483 204-207
+modules/subtitle_generator.py
+  s_83f527a4adcc23::t_4250dbd896a1e1 75-78
+  s_83f527a4adcc23::t_6a8008ca734819 40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "913e2eb14f8340c2a02e373def8326e13d3c7c25",
+  "prompts": {},
+  "sessions": {
+    "s_83f527a4adcc23": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f43351c9-3106-4116-b9e0-fc155a2a37ba",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Guillaume Gay <guillaume.gay@protonmail.com>"
+    }
+  }
+}
