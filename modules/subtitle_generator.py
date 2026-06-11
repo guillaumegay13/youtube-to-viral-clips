@@ -197,25 +197,78 @@ class SubtitleGenerator:
         
         temp_file.write("[Events]\n")
         temp_file.write("Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n")
-        
+
+        highlight_color = style_settings.get('highlight_color')
+
         # Write subtitle events
         for group in word_groups:
             start_time = group['start'] - video_offset
             end_time = group['end'] - video_offset
-            
+
             # Skip if outside clip bounds
             if start_time < 0 or end_time < 0:
                 continue
-                
-            start_str = self._seconds_to_ass_time(start_time)
-            end_str = self._seconds_to_ass_time(end_time)
-            text = self._format_ass_text(group['text'])
 
+            if highlight_color and group.get('words'):
+                events = self._build_highlight_events(
+                    group, style_settings, video_offset, primary_color
+                )
+                for event_start, event_end, text in events:
+                    start_str = self._seconds_to_ass_time(event_start)
+                    end_str = self._seconds_to_ass_time(event_end)
+                    temp_file.write(f"Dialogue: 0,{start_str},{end_str},Default,,0,0,0,,{text}\n")
+            else:
+                start_str = self._seconds_to_ass_time(start_time)
+                end_str = self._seconds_to_ass_time(end_time)
+                text = self._format_ass_text(group['text'])
 
-            temp_file.write(f"Dialogue: 0,{start_str},{end_str},Default,,0,0,0,,{text}\n")
-        
+                temp_file.write(f"Dialogue: 0,{start_str},{end_str},Default,,0,0,0,,{text}\n")
+
         temp_file.close()
         return temp_file.name
+
+    def _build_highlight_events(self, group: Dict, style_settings: Dict,
+                                video_offset: float, primary_color: str) -> List[tuple]:
+        """Build one ASS event per spoken word, with the active word emphasized.
+
+        Each event spans from the word's start to the next word's start so the
+        caption stays on screen with no flicker between words.
+        """
+        highlight_color = self._color_to_ass(style_settings['highlight_color'])
+        scale = int(style_settings.get('highlight_scale', 110))
+        highlight_tag = f"{{\\c{highlight_color}\\fscx{scale}\\fscy{scale}}}"
+        reset_tag = f"{{\\c{primary_color}\\fscx100\\fscy100}}"
+
+        words = group['words']
+        tokens = [self._format_ass_text(w['word']) for w in words]
+        emoji_token = self._format_ass_text(group['emoji']) if group.get('emoji') else None
+
+        group_start = group['start'] - video_offset
+        group_end = group['end'] - video_offset
+
+        events = []
+        for i, word in enumerate(words):
+            event_start = max(word['start'] - video_offset, group_start)
+            if i + 1 < len(words):
+                event_end = words[i + 1]['start'] - video_offset
+            else:
+                event_end = group_end
+
+            if event_end <= event_start:
+                continue
+
+            parts = []
+            for j, token in enumerate(tokens):
+                if j == i:
+                    parts.append(f"{highlight_tag}{token}{reset_tag}")
+                else:
+                    parts.append(token)
+            if emoji_token:
+                parts.append(emoji_token)
+
+            events.append((event_start, event_end, ' '.join(parts)))
+
+        return events
     
     def _color_to_ass(self, color) -> str:
         """Convert color to ASS format (&HAABBGGRR)"""
@@ -338,6 +391,7 @@ class SubtitleGenerator:
 
         groups = []
         current_group = []
+        current_word_timings = []
         current_start = None
         current_end = None
 
@@ -352,6 +406,11 @@ class SubtitleGenerator:
             clean_word = word['word'].strip().replace('\\', '')
 
             current_group.append(clean_word)
+            current_word_timings.append({
+                'word': clean_word,
+                'start': word['start'],
+                'end': word['end']
+            })
             current_end = word['end']
 
             # Decide if we should continue grouping
@@ -379,12 +438,15 @@ class SubtitleGenerator:
                 groups.append({
                     'text': ' '.join(current_group),
                     'start': current_start,
-                    'end': current_end
+                    'end': current_end,
+                    # Per-word timings, kept for karaoke-style word highlighting
+                    'words': current_word_timings
                 })
                 current_group = []
+                current_word_timings = []
                 current_start = None
                 current_end = None
-        
+
         return groups
 
     def _add_smart_emojis(self, word_groups: List[Dict], language: str = "en", density: float = 0.4) -> List[Dict]:
@@ -417,6 +479,8 @@ class SubtitleGenerator:
             emoji = self._pick_emoji_for_text(text, language, avoid_emoji=last_emoji)
             if emoji:
                 enriched_group['text'] = f"{text} {emoji}"
+                # Kept separate so word-highlight rendering never highlights it
+                enriched_group['emoji'] = emoji
                 used_emoji_groups += 1
                 last_emoji = emoji
 

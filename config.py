@@ -199,6 +199,29 @@ SUBTITLE_TEMPLATES = {
             "max_words": 2
         }
     },
+    "Viral Highlight": {
+        "description": "Word-by-word karaoke highlight: white text, active word pops in yellow",
+        "horizontal": {
+            "fontsize": 90,
+            "color": (255, 255, 255),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 6,
+            "position": 0.85,
+            "max_words": 3,
+            "highlight_color": (255, 220, 0),
+            "highlight_scale": 115
+        },
+        "vertical": {
+            "fontsize": 110,
+            "color": (255, 255, 255),
+            "stroke_color": (0, 0, 0),
+            "stroke_width": 7,
+            "position": 0.7,
+            "max_words": 3,
+            "highlight_color": (255, 220, 0),
+            "highlight_scale": 115
+        }
+    },
     "Viral Bold": {
         "description": "Massive white text with extreme black outline",
         "horizontal": {
