@@ -1,0 +1,26 @@
+modules/subtitle_generator.py
+  s_83f527a4adcc23::t_64dba4aacbde0a 200-202,207,212-225,229-271
+  s_83f527a4adcc23::t_1d95924748862d 441-443,446,449
+  s_83f527a4adcc23::t_d30297382c7e3d 482-483
+  s_83f527a4adcc23::t_f71432404f5be8 394,409-413
+tests/test_subtitle_highlight.py
+  s_83f527a4adcc23::t_31c6929485bfb8 1-146
+config.py
+  s_83f527a4adcc23::t_e1d8bd320ffabc 202-224
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f31a9402c7061442c9e38335b7c724f56e7b0b09",
+  "prompts": {},
+  "sessions": {
+    "s_83f527a4adcc23": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f43351c9-3106-4116-b9e0-fc155a2a37ba",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Guillaume Gay <guillaume.gay@protonmail.com>"
+    }
+  }
+}
