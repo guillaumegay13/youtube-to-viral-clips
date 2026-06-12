@@ -1,0 +1,27 @@
+config.py
+  s_83f527a4adcc23::t_8522efb1548191 268-269
+  s_83f527a4adcc23::t_1b02738988e242 22-24
+main.py
+  s_83f527a4adcc23::t_cf5b8f56b5b002 110-115
+  s_83f527a4adcc23::t_0958c1b5e780c8 69-74
+README.md
+  s_83f527a4adcc23::t_bca69312e9ca6c 127
+AGENTS.md
+  s_83f527a4adcc23::t_abc95a9135990f 68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "19a6e03675003514f05d9895c906d430aed473b2",
+  "prompts": {},
+  "sessions": {
+    "s_83f527a4adcc23": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f43351c9-3106-4116-b9e0-fc155a2a37ba",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Guillaume Gay <guillaume.gay@protonmail.com>"
+    }
+  }
+}
