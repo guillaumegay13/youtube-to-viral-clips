@@ -124,7 +124,7 @@ Edit `config.py` to customize:
 - `MIN_VIRAL_SCORE`: Minimum score threshold (0-10)
 - `MIN_CLIP_LENGTH`: Minimum clip duration in seconds
 - `MAX_CLIP_LENGTH`: Maximum clip duration in seconds
-- `WHISPER_MODEL`: Whisper model size ("base", "small", "medium", "large")
+- `WHISPER_MODEL`: Whisper model ("base", "small", "medium", "large-v3", "large-v3-turbo"). Default is "large-v3-turbo" — smaller models produce poor subtitles on non-English audio. Override per run with `--whisper-model`; pass `--language fr` to skip auto-detection.
 
 ## Podcast Mode (Split-Stack Layout)
 

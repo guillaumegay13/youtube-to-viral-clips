@@ -65,7 +65,7 @@ YouTube URL → Download → Transcribe → Analyze → Extract Clips → Add Su
 ## Key Configuration (`config.py`)
 
 - `AI_PROVIDER`: `"ollama"` | `"openai"` | `"anthropic"`
-- `WHISPER_MODEL`: `"base"` | `"small"` | `"medium"` | `"large"`
+- `WHISPER_MODEL`: `"base"` | `"small"` | `"medium"` | `"large-v3"` | `"large-v3-turbo"` (default; smaller models give poor non-English subtitles). CLI overrides: `--whisper-model`, `--language fr`
 - `WHISPER_BACKEND`: `"faster-whisper"` | `"openai-whisper"`
 - `MIN_VIRAL_SCORE`: Float 0-10, threshold for clip selection (default: 6.0)
 - `MIN_CLIP_LENGTH` / `MAX_CLIP_LENGTH`: Clip duration bounds in seconds (15-60)

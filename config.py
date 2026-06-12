@@ -19,7 +19,9 @@ for dir_path in [DOWNLOADS_DIR, OUTPUTS_DIR, TRANSCRIPTS_DIR]:
     dir_path.mkdir(exist_ok=True)
 
 VIDEO_QUALITY = "720p"
-WHISPER_MODEL = "base"
+# large-v3-turbo: near large-v3 accuracy at ~8x its speed. Critical for
+# non-English content - "base" produces unusable French subtitles.
+WHISPER_MODEL = "large-v3-turbo"
 WHISPER_BACKEND = "faster-whisper"  # Options: "faster-whisper", "openai-whisper"
 WHISPER_DEVICE = "cpu"  # Set to "cuda" on GPU VPS instances
 WHISPER_COMPUTE_TYPE = "int8"  # Good CPU default for faster-whisper
@@ -263,8 +265,8 @@ AUDIO_CODEC = "aac"
 
 WHISPER_LANGUAGE = None  
 WHISPER_TASK = "transcribe"  
-WHISPER_BEAM_SIZE = 2
-WHISPER_BEST_OF = 2
+WHISPER_BEAM_SIZE = 5
+WHISPER_BEST_OF = 5
 WHISPER_TEMPERATURE = (0.0, 0.2)
 
 DEFAULT_NUM_CLIPS = 5

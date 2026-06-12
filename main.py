@@ -66,6 +66,12 @@ Examples:
     parser.add_argument('--provider', type=str, default='ollama',
                        choices=['ollama', 'openai', 'anthropic'],
                        help='AI provider for viral detection (default: %(default)s)')
+    parser.add_argument('--whisper-model', type=str, default=None,
+                       help='Whisper model override, e.g. base, small, medium, large-v3, '
+                            'large-v3-turbo (default: config WHISPER_MODEL)')
+    parser.add_argument('--language', type=str, default=None,
+                       help='Audio language hint for transcription, e.g. fr, en '
+                            '(default: auto-detect)')
     
     args = parser.parse_args()
     
@@ -101,8 +107,12 @@ Examples:
         print(f"\n🎧 Transcribing audio with Whisper...")
         print(f"Estimated time: {format_time(video_metadata['duration'] * 0.3)}")
         
-        transcriber = VideoTranscriber()
-        transcript = transcriber.transcribe(video_path, force=args.force_transcribe)
+        if args.whisper_model:
+            transcriber = VideoTranscriber(model_name=args.whisper_model)
+        else:
+            transcriber = VideoTranscriber()
+        transcript = transcriber.transcribe(video_path, force=args.force_transcribe,
+                                            language=args.language)
         print(f"✅ Transcription complete: {len(transcript['segments'])} segments")
         
         print(f"\n🤖 Analyzing transcript for viral moments (provider: {args.provider})...")
