@@ -176,6 +176,13 @@ class SubtitleGenerator:
             alignment = 5
             margin_v = max(min_margin_v, int(video_height * 0.1))
 
+        # For middle alignment, libass positions by baseline/margin and renders
+        # slightly BELOW the geometric center. Pin the caption's center exactly
+        # on the target line with \pos so split-stack seam captions read centered.
+        center_pos_tag = ""
+        if alignment == 5:
+            center_pos_tag = f"{{\\pos({video_width // 2},{int(y_pos * video_height)})}}"
+
         # Write ASS header
         temp_file.write("[Script Info]\n")
         temp_file.write("Title: Generated Subtitles\n")
@@ -220,13 +227,13 @@ class SubtitleGenerator:
                 for event_start, event_end, text in events:
                     start_str = self._seconds_to_ass_time(event_start)
                     end_str = self._seconds_to_ass_time(event_end)
-                    temp_file.write(f"Dialogue: 0,{start_str},{end_str},Default,,0,0,0,,{text}\n")
+                    temp_file.write(f"Dialogue: 0,{start_str},{end_str},Default,,0,0,0,,{center_pos_tag}{text}\n")
             else:
                 start_str = self._seconds_to_ass_time(start_time)
                 end_str = self._seconds_to_ass_time(end_time)
                 text = self._format_ass_text(group['text'])
 
-                temp_file.write(f"Dialogue: 0,{start_str},{end_str},Default,,0,0,0,,{text}\n")
+                temp_file.write(f"Dialogue: 0,{start_str},{end_str},Default,,0,0,0,,{center_pos_tag}{text}\n")
 
         temp_file.close()
         return temp_file.name

@@ -144,3 +144,55 @@ def test_ass_file_static_without_highlight_color(generator):
 
     assert content.count("Dialogue:") == 1
     assert "\\fscx" not in content
+
+
+def test_seam_caption_is_pinned_to_exact_center(generator):
+    # position 0.5 -> split-stack seam: libass middle-alignment renders below
+    # the geometric center, so we pin the caption with \pos at exact center.
+    word_groups = [{
+        'text': "This is huge",
+        'start': 0.0,
+        'end': 1.0,
+        'words': _words(("This", 0.0, 0.3), ("is", 0.3, 0.5), ("huge", 0.5, 1.0)),
+    }]
+    style = {
+        'fontsize': 100, 'color': (255, 255, 255), 'stroke_color': (0, 0, 0),
+        'stroke_width': 5, 'position': 0.5,
+    }
+
+    ass_path = generator._create_ass_file(word_groups, style, video_offset=0.0,
+                                          video_width=1080, video_height=1920)
+    try:
+        with open(ass_path, encoding='utf-8') as f:
+            content = f.read()
+    finally:
+        import os
+        os.unlink(ass_path)
+
+    # Centered horizontally (1080/2) on the exact vertical center (0.5 * 1920)
+    assert "\\pos(540,960)" in content
+
+
+def test_bottom_caption_has_no_pos_override(generator):
+    word_groups = [{
+        'text': "This is huge",
+        'start': 0.0,
+        'end': 1.0,
+        'words': _words(("This", 0.0, 0.3), ("is", 0.3, 0.5), ("huge", 0.5, 1.0)),
+    }]
+    style = {
+        'fontsize': 100, 'color': (255, 255, 255), 'stroke_color': (0, 0, 0),
+        'stroke_width': 5, 'position': 0.85,
+    }
+
+    ass_path = generator._create_ass_file(word_groups, style, video_offset=0.0,
+                                          video_width=1080, video_height=1920)
+    try:
+        with open(ass_path, encoding='utf-8') as f:
+            content = f.read()
+    finally:
+        import os
+        os.unlink(ass_path)
+
+    # Bottom-positioned styles keep margin-based placement, no \pos pin
+    assert "\\pos(" not in content
