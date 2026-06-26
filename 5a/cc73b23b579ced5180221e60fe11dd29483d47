@@ -1,0 +1,22 @@
+modules/subtitle_generator.py
+  s_4181ac0158b548::t_eed48b1d70802d 179-185
+  s_4181ac0158b548::t_eaa1bcbc6edda4 230,236
+tests/test_subtitle_highlight.py
+  s_4181ac0158b548::t_39eb4b079891e0 147-198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.1",
+  "base_commit_sha": "5acc73b23b579ced5180221e60fe11dd29483d47",
+  "prompts": {},
+  "sessions": {
+    "s_4181ac0158b548": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe6186a8-5780-45cf-a3b1-39f53f76a43c",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Guillaume Gay <guillaume.gay@protonmail.com>"
+    }
+  }
+}
