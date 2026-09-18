@@ -47,7 +47,7 @@ sudo apt update
 sudo apt install ffmpeg
 
 # Windows
-# Download from https://ffmpeg.org/download.html
+# Download from https://ffmpeg.org/download.html and add FFmpeg to PATH
 ```
 
 4. Set up AI provider:
