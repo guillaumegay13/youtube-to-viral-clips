@@ -204,7 +204,8 @@ SUBTITLE_TEMPLATES = {
     "Viral Highlight": {
         "description": "Word-by-word karaoke highlight: white text, active word pops in yellow",
         "horizontal": {
-            "fontsize": 90,
+            "font": "Impact",
+            "fontsize": 104,
             "color": (255, 255, 255),
             "stroke_color": (0, 0, 0),
             "stroke_width": 6,
@@ -214,7 +215,8 @@ SUBTITLE_TEMPLATES = {
             "highlight_scale": 115
         },
         "vertical": {
-            "fontsize": 110,
+            "font": "Impact",
+            "fontsize": 126,
             "color": (255, 255, 255),
             "stroke_color": (0, 0, 0),
             "stroke_width": 7,
