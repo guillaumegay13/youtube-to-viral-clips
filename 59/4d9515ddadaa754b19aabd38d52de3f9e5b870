@@ -1,0 +1,19 @@
+config.py
+  s_9377055897c256::t_65878081840743 207-208,218-219
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "594d9515ddadaa754b19aabd38d52de3f9e5b870",
+  "prompts": {},
+  "sessions": {
+    "s_9377055897c256": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "da41f330-7b1f-47cf-ad70-e4219dd04904",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Guillaume Gay <guillaume.gay@protonmail.com>"
+    }
+  }
+}
